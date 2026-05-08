@@ -1,22 +1,2 @@
-# _redirects — Netlify / Cloudflare Pages redirect rules
-# Place this file in your /public folder alongside index.html
-
-# Route /play and /game to the game file
-/play          /game.html      200
-/game          /game.html      200
-/command       /game.html      200
-
-# Scenario deep links
-/play/scenario /game.html?mode=scenario    200
-/play/warroom  /game.html#wr              200
-/play/tmap     /game.html#tmap            200
-
-# Join room deep link (shared from game)
-/join/:code    /game.html?room=:code       200
-
-# App store redirect placeholders (update with real URLs after publishing)
-/app/android   https://play.google.com/store/apps/details?id=com.geostrat.game  302
-/app/ios       https://apps.apple.com/app/geostrat/id0000000000                 302
-
-# Fallback — SPA routing
-/*             /index.html     200
+/play    /game.html    200
+/game    /game.html    200
