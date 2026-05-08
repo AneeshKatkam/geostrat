@@ -1,0 +1,2161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>GEOSTRAT — Complete War System</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+/* ───────────── RESET ───────────── */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+*::-webkit-scrollbar{width:3px}
+*::-webkit-scrollbar-thumb{background:rgba(0,200,255,.18);border-radius:3px}
+:root{
+  --bg:#030810;--panel:#08101f;--p2:#0b1627;--p3:#0f1c32;
+  --bd:rgba(0,180,255,.13);--bd2:rgba(0,180,255,.06);
+  --ac:#00c8ff;--go:#ffd700;--gn:#00e676;--rd:#ff3b3b;
+  --pu:#a855f7;--or:#ff8c00;--tx:#a0c0d8;--dm:#3a5878;--wh:#daeeff;
+}
+html,body{background:var(--bg);color:var(--tx);font-family:'Exo 2',sans-serif;height:100%;overflow:hidden;user-select:none}
+.app{display:flex;flex-direction:column;height:100vh;overflow:hidden}
+
+/* ───────────── SCREENS ───────────── */
+.scr{display:none;flex-direction:column;flex:1;overflow:hidden;animation:si .3s ease}
+.scr.on{display:flex}
+@keyframes si{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ───────────── HUD BAR ───────────── */
+.hud{height:50px;background:var(--panel);border-bottom:1px solid var(--bd);
+  display:flex;align-items:center;padding:0 12px;gap:10px;flex-shrink:0;position:relative;z-index:50}
+.hud::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(0,200,255,.35),transparent)}
+.hud-bk{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--ac);
+  cursor:pointer;padding:4px 10px;border:1px solid var(--bd);border-radius:2px;transition:all .2s}
+.hud-bk:hover{border-color:var(--ac);background:rgba(0,200,255,.07)}
+.hud-t{font-family:'Orbitron',monospace;font-size:12px;font-weight:700;color:var(--ac);letter-spacing:3px}
+.hud-sp{flex:1}
+.bx{padding:3px 9px;border-radius:2px;font-family:'Share Tech Mono',monospace;font-size:9px;border:1px solid}
+.bx-live{border-color:var(--gn);color:var(--gn);background:rgba(0,230,118,.07);animation:bl 2s infinite}
+.bx-alert{border-color:var(--rd);color:var(--rd);background:rgba(255,59,59,.07);animation:bl 1.4s infinite}
+.bx-gold{border-color:var(--go);color:var(--go);background:rgba(255,215,0,.07)}
+@keyframes bl{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ───────────── UTIL ───────────── */
+.body{flex:1;overflow-y:auto;padding:12px}
+.pb80{padding-bottom:80px}
+.card{background:var(--p2);border:1px solid var(--bd);border-radius:4px;padding:12px;margin-bottom:8px}
+.shdr{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--dm);
+  letter-spacing:3px;margin-bottom:10px;text-transform:uppercase;display:flex;align-items:center;gap:6px}
+.shdr::before{content:'';width:3px;height:10px;background:var(--ac);border-radius:1px;flex-shrink:0}
+.btn{padding:8px 16px;border:1px solid var(--ac);color:var(--ac);background:rgba(0,200,255,.06);
+  font-family:'Orbitron',monospace;font-size:10px;font-weight:700;letter-spacing:2px;
+  cursor:pointer;border-radius:3px;transition:all .2s;text-align:center}
+.btn:hover{box-shadow:0 0 16px rgba(0,200,255,.22);transform:translateY(-1px)}
+.btn-f{display:block;width:100%}
+.btn-gn{border-color:var(--gn);color:var(--gn);background:rgba(0,230,118,.05)}
+.btn-rd{border-color:var(--rd);color:var(--rd);background:rgba(255,59,59,.05)}
+.btn-go{border-color:var(--go);color:var(--go);background:rgba(255,215,0,.05)}
+.btn-pu{border-color:var(--pu);color:var(--pu);background:rgba(168,85,247,.05)}
+.mb8{margin-bottom:8px}.mb12{margin-bottom:12px}.mt8{margin-top:8px}.mt12{margin-top:12px}
+.flex{display:flex}.aic{align-items:center}.jsb{justify-content:space-between}
+.g8{gap:8px}.g12{gap:12px}.f1{flex:1}
+.mono{font-family:'Share Tech Mono',monospace}
+.f9{font-size:9px}.f10{font-size:10px}.f11{font-size:11px}.f12{font-size:12px}
+.dm{color:var(--dm)}.ac{color:var(--ac)}.go{color:var(--go)}.gn{color:var(--gn)}.rd{color:var(--rd)}
+.lh{line-height:1.7}.bold{font-weight:700}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px}
+.divider{height:1px;background:var(--bd2);margin:10px 0}
+.tag{display:inline-block;padding:2px 7px;border-radius:2px;font-family:'Share Tech Mono',monospace;font-size:8px;border:1px solid;letter-spacing:1px}
+.tb{border-color:rgba(0,200,255,.3);color:var(--ac);background:rgba(0,200,255,.06)}
+.tg{border-color:rgba(0,230,118,.3);color:var(--gn);background:rgba(0,230,118,.06)}
+.tr{border-color:rgba(255,59,59,.3);color:var(--rd);background:rgba(255,59,59,.06)}
+.ty{border-color:rgba(255,215,0,.3);color:var(--go);background:rgba(255,215,0,.06)}
+.tp{border-color:rgba(168,85,247,.3);color:var(--pu);background:rgba(168,85,247,.06)}
+.td{border-color:var(--bd2);color:var(--dm)}
+.toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);
+  background:var(--panel);border:1px solid var(--ac);color:var(--ac);
+  padding:8px 18px;border-radius:3px;font-family:'Share Tech Mono',monospace;
+  font-size:10px;z-index:9999;display:none;white-space:nowrap;
+  box-shadow:0 4px 20px rgba(0,0,0,.5)}
+
+/* ───────────── SPLASH ───────────── */
+#sp{align-items:center;justify-content:center;text-align:center;padding:20px;
+  background:radial-gradient(ellipse at 50% 40%,#041528,var(--bg) 68%);overflow:hidden;position:relative}
+.hex-bg{position:absolute;inset:-20%;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='52'%3E%3Cpolygon points='30,2 58,17 58,35 30,50 2,35 2,17' fill='none' stroke='rgba(0,180,255,0.04)' stroke-width='1'/%3E%3C/svg%3E");
+  background-size:60px 52px;animation:hx 30s linear infinite}
+@keyframes hx{to{transform:translate(60px,52px)}}
+.rdr{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}
+.rring{position:absolute;border-radius:50%;border:1px solid;top:50%;left:50%;
+  transform:translate(-50%,-50%);animation:rr 4s ease-out infinite}
+@keyframes rr{0%{width:0;height:0;opacity:.6;border-color:rgba(0,200,255,.5)}
+  100%{width:600px;height:600px;opacity:0;border-color:rgba(0,200,255,0)}}
+.rring:nth-child(2){animation-delay:1.3s}.rring:nth-child(3){animation-delay:2.6s}
+.rsweep{position:absolute;width:160px;height:160px;border-radius:50%;top:50%;left:50%;
+  margin:-80px 0 0 -80px;background:conic-gradient(rgba(0,200,255,.14),transparent 80deg);
+  animation:sw 3s linear infinite}
+@keyframes sw{to{transform:rotate(360deg)}}
+.blp{position:absolute;width:5px;height:5px;border-radius:50%;background:var(--ac);
+  box-shadow:0 0 8px var(--ac);animation:bp 2s ease-in-out infinite}
+@keyframes bp{0%,100%{opacity:.15}50%{opacity:1}}
+.sp-logo{font-family:'Orbitron',monospace;font-size:38px;font-weight:900;color:var(--ac);
+  letter-spacing:5px;text-shadow:0 0 50px rgba(0,200,255,.5);position:relative;z-index:2;
+  animation:fu 1s ease .4s both}
+.sp-sub{font-family:'Orbitron',monospace;font-size:9px;color:var(--dm);letter-spacing:4px;
+  margin:6px 0 22px;position:relative;z-index:2;animation:fu 1s ease .6s both}
+@keyframes fu{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.sp-desc{font-size:11px;color:var(--dm);line-height:1.9;max-width:290px;margin:0 auto 22px;
+  position:relative;z-index:2;animation:fu 1s ease .8s both}
+.sp-pills{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;margin-bottom:22px;
+  position:relative;z-index:2;animation:fu 1s ease .9s both}
+.sp-btns{display:flex;flex-direction:column;gap:8px;position:relative;z-index:2;animation:fu 1s ease 1s both}
+.sbtn{display:block;padding:12px 22px;font-family:'Orbitron',monospace;font-size:11px;
+  font-weight:700;letter-spacing:2px;cursor:pointer;border-radius:3px;text-align:center;
+  transition:all .25s;border:1px solid}
+.sbtn:hover{transform:translateY(-2px)}
+.sb-b{border-color:var(--ac);color:var(--ac);background:rgba(0,200,255,.06)}
+.sb-b:hover{box-shadow:0 0 28px rgba(0,200,255,.25)}
+.sb-y{border-color:var(--go);color:var(--go);background:rgba(255,215,0,.05)}
+.sb-y:hover{box-shadow:0 0 28px rgba(255,215,0,.2)}
+.sb-r{border-color:var(--rd);color:var(--rd);background:rgba(255,59,59,.05)}
+.sb-r:hover{box-shadow:0 0 28px rgba(255,59,59,.2)}
+.sb-p{border-color:var(--pu);color:var(--pu);background:rgba(168,85,247,.05)}
+.sb-p:hover{box-shadow:0 0 28px rgba(168,85,247,.2)}
+.sp-warn{margin-top:16px;font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--dm);
+  line-height:1.8;border:1px solid rgba(255,215,0,.1);background:rgba(255,215,0,.02);
+  padding:10px;border-radius:3px;position:relative;z-index:2;animation:fu 1s ease 1.2s both}
+
+/* ───────────── WAR ROOM ───────────── */
+.wr{display:flex;flex-direction:column;flex:1;overflow:hidden}
+/* Top controls */
+.wrtop{background:var(--panel);border-bottom:1px solid var(--bd);
+  padding:8px 12px;display:flex;align-items:center;gap:8px;flex-shrink:0}
+.wrroom{flex:1}
+.wrcode{font-family:'Orbitron',monospace;font-size:11px;color:var(--go);letter-spacing:3px}
+.wrinfo{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--dm);margin-top:2px}
+.wrbtn{padding:5px 10px;border:1px solid var(--bd);color:var(--tx);background:var(--p3);
+  font-family:'Share Tech Mono',monospace;font-size:9px;cursor:pointer;border-radius:2px;
+  transition:all .2s;letter-spacing:1px;flex-shrink:0}
+.wrbtn:hover{border-color:var(--ac);color:var(--ac)}
+.wrbtn.on{border-color:var(--gn);color:var(--gn);background:rgba(0,230,118,.07)}
+.wrbtn.muted{border-color:var(--rd);color:var(--rd);background:rgba(255,59,59,.07)}
+/* Video grid */
+.vsec{padding:8px 12px 4px;flex-shrink:0}
+.vhdr{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--dm);
+  letter-spacing:3px;margin-bottom:7px;display:flex;align-items:center;justify-content:space-between}
+.vhdr-l{display:flex;align-items:center;gap:6px}
+.vhdr-l::before{content:'';width:3px;height:10px;background:var(--ac);border-radius:1px}
+.vlbtn{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--dm);
+  background:transparent;border:none;cursor:pointer;padding:2px 6px;transition:color .2s}
+.vlbtn:hover,.vlbtn.on{color:var(--ac)}
+.vgrid{display:grid;gap:5px}
+.vg2{grid-template-columns:1fr 1fr}
+.vg3{grid-template-columns:1fr 1fr 1fr}
+.vg22{grid-template-columns:1fr 1fr;grid-template-rows:auto auto}
+/* Video tile */
+.vt{background:var(--p2);border:1px solid var(--bd2);border-radius:4px;overflow:hidden;
+  position:relative;aspect-ratio:16/10;cursor:pointer;transition:border-color .3s,box-shadow .3s}
+.vt.spk{border-color:var(--gn);box-shadow:0 0 10px rgba(0,230,118,.2)}
+.vt.you{border-color:rgba(0,200,255,.35)}
+.vt.off{opacity:.38;filter:grayscale(.5)}
+.vt:hover{border-color:rgba(0,200,255,.28)}
+.vav{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;position:relative;overflow:hidden;
+  background:linear-gradient(135deg,var(--p2),var(--p3))}
+.vav::before{content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 50% 30%,rgba(0,200,255,.04),transparent 60%)}
+.vscan{position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.07) 3px,rgba(0,0,0,.07) 4px)}
+.vnoise{position:absolute;inset:0;pointer-events:none;opacity:0;animation:nf 10s infinite}
+@keyframes nf{0%,93%,100%{opacity:0}94%{opacity:.35}95%{opacity:0}97%{opacity:.2}}
+video.vvid{width:100%;height:100%;object-fit:cover;display:none;position:absolute;inset:0}
+.vico{font-size:22px;position:relative;z-index:1;margin-bottom:3px}
+.vinit{font-family:'Orbitron',monospace;font-size:13px;color:rgba(0,200,255,.65);
+  position:relative;z-index:1;font-weight:700}
+.vt.you .vinit{color:rgba(255,215,0,.7)}
+.vbar{position:absolute;bottom:0;left:0;right:0;
+  background:linear-gradient(transparent,rgba(3,8,16,.92));padding:14px 6px 4px}
+.vname{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--wh);letter-spacing:1px}
+.vrole{font-family:'Share Tech Mono',monospace;font-size:7px;color:var(--dm);margin-top:1px}
+.vdot{position:absolute;top:5px;right:5px;width:7px;height:7px;border-radius:50%;border:1px solid rgba(0,0,0,.5)}
+.vdot.on{background:var(--gn);box-shadow:0 0 5px var(--gn)}
+.vdot.off{background:var(--dm)}
+.vmute{position:absolute;top:5px;left:5px;font-size:9px;
+  background:rgba(255,59,59,.8);padding:1px 4px;border-radius:2px;display:none}
+.vt.muted .vmute{display:block}
+.vhand{position:absolute;top:5px;left:18px;font-size:11px;display:none}
+.vt.hand .vhand{display:block}
+/* Signal bars */
+.vsig{position:absolute;top:5px;right:16px;display:flex;gap:1px;align-items:flex-end}
+.sbar{width:2px;border-radius:1px;background:var(--dm)}
+.sbar.on{background:var(--gn)}
+/* Voice wave */
+.vwave{position:absolute;bottom:18px;left:4px;right:4px;
+  display:flex;gap:2px;align-items:flex-end;height:13px;opacity:0;transition:opacity .25s}
+.vt.spk .vwave{opacity:1}
+.wb{flex:1;background:var(--gn);border-radius:1px;transform-origin:bottom;
+  animation:wba .4s ease-in-out infinite alternate}
+@keyframes wba{from{height:2px}to{height:100%}}
+.wb:nth-child(1){animation-delay:0s}.wb:nth-child(2){animation-delay:.07s}
+.wb:nth-child(3){animation-delay:.15s}.wb:nth-child(4){animation-delay:.05s}.wb:nth-child(5){animation-delay:.12s}
+/* Role accent borders */
+.vt[data-r="pm"]{border-color:rgba(255,215,0,.25)}
+.vt[data-r="def"]{border-color:rgba(255,107,26,.18)}
+.vt[data-r="army"]{border-color:rgba(0,230,118,.18)}
+.vt[data-r="air"]{border-color:rgba(0,200,255,.18)}
+.vt[data-r="navy"]{border-color:rgba(59,130,246,.18)}
+.vt[data-r="nsa"]{border-color:rgba(168,85,247,.18)}
+/* Orders panel */
+.opanel{flex:1;overflow:hidden;display:flex;flex-direction:column;border-top:1px solid var(--bd)}
+.otabs{display:flex;background:var(--panel);border-bottom:1px solid var(--bd);flex-shrink:0}
+.otab{flex:1;padding:8px 2px;text-align:center;font-family:'Share Tech Mono',monospace;
+  font-size:8px;color:var(--dm);cursor:pointer;background:transparent;border:none;
+  border-bottom:2px solid transparent;transition:all .2s;text-transform:uppercase;letter-spacing:1px}
+.otab.on{color:var(--ac);border-bottom-color:var(--ac)}
+.obody{flex:1;overflow-y:auto;padding:10px 12px}
+
+/* ───────────── TACTICAL MAP ───────────── */
+.tmap{
+  background:#010a16;border:1px solid var(--bd);border-radius:4px;
+  height:200px;position:relative;overflow:hidden;margin-bottom:10px;
+}
+/* Grid overlay */
+.tmap-grid{position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(0,180,255,.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,180,255,.04) 1px,transparent 1px);
+  background-size:28px 28px}
+/* Latitude lines */
+.tmap-lats{position:absolute;inset:0;pointer-events:none}
+.tmap-lat{position:absolute;left:0;right:0;height:1px;background:rgba(0,180,255,.03)}
+/* Terrain shading */
+.tmap-land{position:absolute;border-radius:2px;background:rgba(40,60,20,.35)}
+.tmap-sea{position:absolute;background:rgba(0,30,60,.4)}
+/* Unit markers */
+.unit{position:absolute;transform:translate(-50%,-50%);cursor:pointer;transition:all .5s ease}
+.unit-dot{width:10px;height:10px;border-radius:50%;border:2px solid;
+  position:relative;transition:all .3s}
+.unit-dot::after{content:'';position:absolute;inset:-4px;border-radius:50%;
+  border:1px solid;opacity:.3;animation:upulse 2s ease-in-out infinite}
+@keyframes upulse{0%,100%{transform:scale(1);opacity:.3}50%{transform:scale(1.4);opacity:.6}}
+.unit-friendly .unit-dot{background:rgba(0,200,255,.6);border-color:var(--ac)}
+.unit-friendly .unit-dot::after{border-color:var(--ac)}
+.unit-enemy .unit-dot{background:rgba(255,59,59,.6);border-color:var(--rd)}
+.unit-enemy .unit-dot::after{border-color:var(--rd)}
+.unit-neutral .unit-dot{background:rgba(255,215,0,.5);border-color:var(--go)}
+.unit-label{position:absolute;top:100%;left:50%;transform:translateX(-50%);
+  font-family:'Share Tech Mono',monospace;font-size:7px;white-space:nowrap;
+  margin-top:3px;letter-spacing:.5px}
+.unit-friendly .unit-label{color:rgba(0,200,255,.8)}
+.unit-enemy .unit-label{color:rgba(255,100,100,.8)}
+.unit-neutral .unit-label{color:rgba(255,215,0,.8)}
+/* Moving unit path */
+.unit-path{position:absolute;top:50%;left:50%;height:1px;transform-origin:left center;
+  background:linear-gradient(90deg,rgba(0,200,255,.3),transparent);pointer-events:none}
+/* Range ring */
+.unit-range{position:absolute;border-radius:50%;border:1px dashed;
+  transform:translate(-50%,-50%);opacity:.15;pointer-events:none}
+/* Threat lines */
+.threat-line{position:absolute;pointer-events:none}
+/* HUD overlay on map */
+.tmap-hud{position:absolute;bottom:0;left:0;right:0;
+  background:linear-gradient(transparent,rgba(1,10,22,.8));
+  padding:18px 10px 6px;display:flex;justify-content:space-between;align-items:flex-end}
+.tmap-label{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--dm);letter-spacing:1px}
+.tmap-label span{color:var(--ac)}
+/* Scale bar */
+.scale-bar{height:2px;background:rgba(0,200,255,.3);position:relative}
+.scale-bar::after{content:'100km';position:absolute;top:-10px;right:0;
+  font-family:'Share Tech Mono',monospace;font-size:7px;color:var(--dm)}
+
+/* ───────────── NSC VOTE SYSTEM ───────────── */
+.nsc-overlay{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:200;
+  display:none;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}
+.nsc-overlay.on{display:flex;animation:fu .25s ease}
+.nsc-modal{background:var(--panel);border:1px solid rgba(255,215,0,.2);border-radius:6px;
+  width:100%;max-width:360px;max-height:90vh;display:flex;flex-direction:column;
+  animation:si .3s ease;overflow:hidden}
+.nsc-hdr{background:rgba(255,215,0,.04);border-bottom:1px solid rgba(255,215,0,.18);
+  padding:14px 16px;flex-shrink:0}
+.nsc-hdr-top{display:flex;align-items:center;gap:8px}
+.nsc-live{width:7px;height:7px;border-radius:50%;background:var(--go);animation:bl 1s infinite;flex-shrink:0}
+.nsc-title{font-family:'Orbitron',monospace;font-size:13px;color:var(--go);font-weight:700}
+.nsc-sub{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--dm);margin-top:3px;letter-spacing:1px}
+.nsc-body{overflow-y:auto;padding:14px 16px;flex:1}
+/* Speech bubbles */
+.speech{padding:11px 12px;border-radius:4px;margin-bottom:9px;position:relative}
+.speech::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px}
+.sp-pm{background:rgba(255,215,0,.05);border:1px solid rgba(255,215,0,.14)}
+.sp-pm::before{background:var(--go)}
+.sp-min{background:rgba(0,200,255,.04);border:1px solid rgba(0,200,255,.12)}
+.sp-min::before{background:var(--ac)}
+.sp-warn{background:rgba(255,59,59,.04);border:1px solid rgba(255,59,59,.12)}
+.sp-warn::before{background:var(--rd)}
+.sp-who{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--dm);
+  margin-bottom:5px;display:flex;align-items:center;gap:5px}
+.sp-txt{font-size:11px;line-height:1.75;color:var(--tx)}
+.sp-txt strong{color:var(--wh)}
+/* Vote options */
+.vote-box{background:rgba(0,200,255,.03);border:1px solid rgba(0,200,255,.18);
+  border-radius:4px;padding:12px;margin-top:12px}
+.vote-title{font-family:'Orbitron',monospace;font-size:9px;color:var(--ac);
+  letter-spacing:2px;margin-bottom:10px}
+.vote-progress{margin-bottom:12px}
+.vp-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.vp-name{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--dm);width:60px;flex-shrink:0}
+.vp-bar-wrap{flex:1;height:6px;background:rgba(255,255,255,.05);border-radius:3px;overflow:hidden}
+.vp-bar{height:100%;border-radius:3px;transition:width .8s ease}
+.vp-val{font-family:'Orbitron',monospace;font-size:9px;width:28px;text-align:right;flex-shrink:0}
+.vote-options{display:flex;flex-direction:column;gap:7px}
+.vopt{display:flex;align-items:center;gap:10px;padding:9px 12px;
+  background:var(--p3);border:1px solid var(--bd);border-radius:3px;cursor:pointer;transition:all .2s}
+.vopt:hover{border-color:var(--ac);background:rgba(0,200,255,.06)}
+.vopt.voted{border-color:var(--gn);background:rgba(0,230,118,.06)}
+.vopt-ico{font-size:16px;flex-shrink:0}
+.vopt-text{flex:1}
+.vopt-title{font-size:12px;font-weight:600;color:var(--wh)}
+.vopt-sub{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--dm);margin-top:2px}
+.vopt-risk{flex-shrink:0}
+.nsc-footer{padding:12px 16px;border-top:1px solid var(--bd);display:flex;gap:8px;flex-shrink:0}
+.nsc-close-btn{flex:1;padding:9px;font-family:'Share Tech Mono',monospace;font-size:10px;
+  cursor:pointer;border-radius:3px;border:1px solid var(--bd);color:var(--dm);background:transparent;transition:all .2s}
+.nsc-close-btn:hover{border-color:var(--rd);color:var(--rd)}
+
+/* ───────────── COMBAT SIM ───────────── */
+#simov{position:fixed;inset:0;background:#000;z-index:1000;
+  display:none;flex-direction:column;opacity:0;transition:opacity .4s}
+#simov.on{display:flex}
+.simbar{height:0;background:#000;flex-shrink:0;transition:height .6s cubic-bezier(.4,0,.2,1)}
+.simbar.open{height:44px}
+.simvp{flex:1;position:relative;overflow:hidden}
+/* Sky */
+.simsky{position:absolute;inset:0;background:linear-gradient(180deg,#010a18 0%,#021222 40%,#021008 100%)}
+.simsky.dawn{background:linear-gradient(180deg,#120820 0%,#2a0e18 30%,#180a08 100%)}
+/* Stars */
+.starlyr{position:absolute;inset:0;overflow:hidden}
+.strd{position:absolute;border-radius:50%;background:#fff;animation:stw 3s ease-in-out infinite}
+@keyframes stw{0%,100%{opacity:.15}50%{opacity:.9}}
+/* Horizon */
+.horizon{position:absolute;bottom:34%;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,rgba(0,200,255,.12),rgba(255,150,0,.08),transparent)}
+/* Terrain */
+.terrwrap{position:absolute;bottom:0;left:0;right:0;height:35%}
+.t-sea{width:100%;height:100%;background:linear-gradient(180deg,#011828,#010e18);position:relative;overflow:hidden}
+.wv{position:absolute;left:-100%;right:-100%;height:3px;
+  background:linear-gradient(90deg,transparent 10%,rgba(0,180,255,.22) 50%,transparent 90%);
+  animation:wva 5s ease-in-out infinite}
+@keyframes wva{0%,100%{transform:translateX(0) scaleY(1)}50%{transform:translateX(3%) scaleY(1.6)}}
+.wv:nth-child(1){top:18%;animation-duration:5s}
+.wv:nth-child(2){top:42%;animation-duration:7s;animation-delay:-2s;opacity:.5}
+.wv:nth-child(3){top:72%;animation-duration:4s;animation-delay:-1s;opacity:.4}
+.t-land{width:100%;height:100%;background:linear-gradient(180deg,#182810,#0f1c08)}
+.t-desert{width:100%;height:100%;background:linear-gradient(180deg,#2a1e0a,#1a1205)}
+/* City lights */
+.citylights{position:absolute;bottom:0;left:0;right:0;height:40%;display:none}
+.cl{position:absolute;bottom:10%;width:2px;height:2px;border-radius:50%;
+  background:var(--go);animation:clw 2s ease-in-out infinite;opacity:.4}
+@keyframes clw{0%,100%{opacity:.3}50%{opacity:.7}}
+/* Stage */
+#simstage{position:absolute;inset:0;pointer-events:none}
+/* Contrail system */
+.contrail{position:absolute;pointer-events:none;animation:ctf 4s ease-out forwards}
+@keyframes ctf{0%{opacity:.7}100%{opacity:0;transform:scaleX(1.5)}}
+/* HUD */
+.simhud{position:absolute;top:0;left:0;right:0;padding:10px 12px;
+  background:linear-gradient(180deg,rgba(0,0,0,.85),transparent);z-index:10;
+  display:flex;justify-content:space-between;align-items:flex-start}
+.shtitle{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:var(--ac);
+  letter-spacing:3px;text-shadow:0 0 18px rgba(0,200,255,.5)}
+.shsub{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--dm);margin-top:2px;letter-spacing:1px}
+.shphase{background:rgba(0,0,0,.6);border:1px solid var(--bd);padding:3px 9px;border-radius:2px;
+  font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--ac);letter-spacing:1px;
+  margin-top:5px;display:inline-block}
+.shclock{font-family:'Orbitron',monospace;font-size:12px;color:var(--go);letter-spacing:2px}
+.shout{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--dm);margin-top:3px}
+.simclose{position:absolute;top:10px;right:12px;z-index:20;
+  padding:5px 12px;border:1px solid rgba(255,59,59,.4);color:var(--rd);
+  background:rgba(0,0,0,.7);font-family:'Share Tech Mono',monospace;font-size:9px;
+  cursor:pointer;border-radius:2px;letter-spacing:1px}
+.simclose:hover{background:rgba(255,59,59,.1)}
+/* Status bar */
+.simsb{position:absolute;bottom:0;left:0;right:0;padding:8px 12px;
+  background:linear-gradient(transparent,rgba(0,0,0,.92));z-index:10}
+.simchips{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px}
+.smc{padding:2px 8px;border-radius:2px;font-family:'Share Tech Mono',monospace;
+  font-size:8px;background:rgba(0,0,0,.6);border:1px solid var(--bd);color:var(--tx)}
+.smc.act{border-color:var(--gn);color:var(--gn);animation:bl 1.5s infinite}
+.smc.hit{border-color:var(--rd);color:var(--rd)}
+.smc.dst{border-color:var(--dm);color:var(--dm);text-decoration:line-through;opacity:.5}
+.simprog{height:2px;background:rgba(255,255,255,.06);border-radius:1px;margin-bottom:5px;overflow:hidden}
+.simprogf{height:100%;background:linear-gradient(90deg,var(--ac),var(--gn));transition:width .5s ease;border-radius:1px}
+.simlog{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--dm);line-height:1.6;min-height:24px}
+.lg{color:var(--gn)}.lb{color:var(--rd)}.li{color:var(--ac)}.lw{color:var(--go)}
+/* Elements */
+.sship{position:absolute;bottom:0;transition:left 5s linear}
+.sship-body{position:absolute;bottom:62%;width:86px;height:17px;
+  background:linear-gradient(180deg,#2a3a4a,#1a2a3a);border-radius:2px 6px 2px 2px;
+  box-shadow:0 3px 14px rgba(0,0,0,.7)}
+.sship-deck{position:absolute;top:-5px;left:15%;right:10%;height:5px;
+  background:linear-gradient(180deg,#1e2e3e,#2a3a4a);border-radius:2px 3px 0 0}
+.sship-tower{position:absolute;top:-13px;left:28%;width:3px;height:11px;background:#1a2a3a;border-radius:1px}
+.sship-radar{position:absolute;top:-18px;left:27%;width:6px;height:2px;background:rgba(0,200,255,.5);
+  animation:rsp 2s linear infinite;transform-origin:1px 1px}
+@keyframes rsp{to{transform:rotate(360deg)}}
+.sship-wake{position:absolute;bottom:62%;right:-45px;width:45px;height:2px;
+  background:linear-gradient(90deg,rgba(0,180,255,.28),transparent);top:8px}
+.sship.e .sship-body{background:linear-gradient(180deg,#3a2a2a,#2a1a1a)}
+.sac{position:absolute;font-size:20px;transition:left 3.5s linear,top 3.5s linear;
+  filter:drop-shadow(0 0 5px rgba(0,200,255,.6))}
+.sac.e{filter:drop-shadow(0 0 5px rgba(255,59,59,.7))}
+.sac.flip{transform:scaleX(-1)}
+/* Contrail behind aircraft */
+.sac::after{content:'';position:absolute;right:-20px;top:50%;transform:translateY(-50%);
+  width:18px;height:1px;background:linear-gradient(90deg,rgba(255,255,255,.3),transparent);
+  border-radius:1px}
+.smsl{position:absolute;width:7px;height:3px;border-radius:3px;
+  transition:left 2s linear,top 2s linear}
+.smsl.f{background:linear-gradient(90deg,#00c8ff,rgba(0,200,255,.15))}
+.smsl.e{background:linear-gradient(270deg,#ff3b3b,rgba(255,59,59,.15))}
+.smsl.f::after{content:'';position:absolute;right:-7px;top:50%;transform:translateY(-50%);
+  border:4px solid transparent;border-left-color:#00c8ff}
+.smsl.e::after{content:'';position:absolute;left:-7px;top:50%;transform:translateY(-50%);
+  border:4px solid transparent;border-right-color:#ff3b3b}
+.sdrone{position:absolute;font-size:11px;color:#f88;animation:dfl .8s ease-in-out infinite alternate}
+.sdrone.f{color:#8fa}
+@keyframes dfl{from{transform:translateY(0)}to{transform:translateY(-4px)}}
+.ssam{position:absolute;width:3px;border-radius:2px;
+  background:linear-gradient(0deg,rgba(255,100,0,0),rgba(255,180,50,.9),white);
+  animation:sml 1.8s ease-in forwards}
+@keyframes sml{0%{height:3px;opacity:1}80%{opacity:.9}100%{height:68px;opacity:0}}
+.slaser{position:absolute;height:2px;transform-origin:left center;border-radius:1px;
+  background:linear-gradient(90deg,rgba(0,230,118,.9),rgba(0,230,118,.1));
+  animation:lzf .35s ease-out forwards}
+@keyframes lzf{0%{opacity:1}100%{opacity:0}}
+.sexp{position:absolute;transform:translate(-50%,-50%);pointer-events:none}
+.ec{width:18px;height:18px;border-radius:50%;
+  background:radial-gradient(circle,#fff 0%,#ffd700 22%,#ff5500 52%,transparent 100%);
+  animation:eca .7s ease-out forwards}
+@keyframes eca{0%{transform:scale(0);opacity:1}25%{transform:scale(2.5)}100%{transform:scale(5);opacity:0}}
+.er{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:8px;height:8px;border-radius:50%;border:2px solid rgba(255,200,50,.7);
+  animation:era .7s ease-out forwards}
+@keyframes era{0%{transform:translate(-50%,-50%) scale(0);opacity:1}100%{transform:translate(-50%,-50%) scale(10);opacity:0}}
+.esm{position:absolute;top:-8px;left:50%;transform:translateX(-50%);
+  width:16px;height:28px;background:radial-gradient(circle,rgba(160,160,160,.5),transparent);
+  animation:esma 2.5s ease-out forwards}
+@keyframes esma{0%{transform:translateX(-50%) scale(.5);opacity:.7}100%{transform:translateX(-50%) translateY(-50px) scale(2.5);opacity:0}}
+.sint{position:absolute;transform:translate(-50%,-50%);width:24px;height:24px;border-radius:50%;
+  border:2px solid var(--gn);animation:inta .5s ease-out forwards}
+@keyframes inta{0%{transform:translate(-50%,-50%) scale(0);opacity:1;background:rgba(0,230,118,.25)}100%{transform:translate(-50%,-50%) scale(4);opacity:0;background:transparent}}
+.storpedo{position:absolute;width:8px;height:3px;border-radius:1px;
+  background:linear-gradient(90deg,#60a5fa,rgba(96,165,250,.15));
+  transition:left 2.5s linear,top 2.5s linear}
+.storpedo::after{content:'';position:absolute;right:-6px;top:50%;transform:translateY(-50%);
+  border:3px solid transparent;border-left-color:#60a5fa}
+.sdc{position:absolute;transform:translate(-50%,-50%);
+  border:1px solid rgba(0,180,255,.4);border-radius:50%;animation:dca 1s ease-out forwards}
+@keyframes dca{0%{width:4px;height:4px;opacity:.8}100%{width:60px;height:28px;opacity:0}}
+/* Result */
+.simres{position:absolute;inset:0;display:none;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.75);z-index:15}
+.simres.on{display:flex;animation:fu .5s ease}
+.rcard{background:var(--panel);border:1px solid var(--bd);border-radius:6px;
+  padding:22px;max-width:310px;width:90%;text-align:center}
+.ricon{font-size:42px;display:block;margin-bottom:10px}
+.rtitle{font-family:'Orbitron',monospace;font-size:14px;font-weight:700;margin-bottom:7px}
+.rbody{font-size:11px;color:var(--dm);line-height:1.7;margin-bottom:12px}
+.rstats{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px}
+.rsbox{background:var(--p2);border:1px solid var(--bd2);border-radius:3px;padding:7px}
+.rsv{font-family:'Orbitron',monospace;font-size:14px;font-weight:700}
+.rsl{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--dm);margin-top:2px}
+.rdb{display:block;width:100%;padding:10px;font-family:'Orbitron',monospace;font-size:10px;
+  font-weight:700;letter-spacing:2px;cursor:pointer;border-radius:3px;border:1px solid var(--ac);
+  color:var(--ac);background:rgba(0,200,255,.07);transition:all .2s;margin-bottom:6px}
+.rdb:hover{box-shadow:0 0 18px rgba(0,200,255,.25)}
+.rcl{display:block;width:100%;padding:8px;font-family:'Share Tech Mono',monospace;font-size:10px;
+  cursor:pointer;border-radius:3px;border:1px solid var(--bd);color:var(--dm);background:transparent;transition:all .2s}
+.rcl:hover{border-color:var(--rd);color:var(--rd)}
+
+/* ───────────── SPECTATOR / REPLAY ───────────── */
+#s-replay .replay-controls{
+  display:flex;align-items:center;gap:8px;padding:10px 12px;
+  background:var(--panel);border-bottom:1px solid var(--bd);flex-shrink:0}
+.rc-btn{padding:5px 12px;border:1px solid var(--bd);background:var(--p3);
+  font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--tx);
+  cursor:pointer;border-radius:2px;transition:all .2s}
+.rc-btn:hover{border-color:var(--ac);color:var(--ac)}
+.rc-btn.on{border-color:var(--gn);color:var(--gn);background:rgba(0,230,118,.07)}
+.rc-scrub{flex:1;height:4px;background:rgba(255,255,255,.08);border-radius:2px;
+  cursor:pointer;position:relative;margin:0 8px}
+.rc-scrub-fill{height:100%;background:var(--ac);border-radius:2px;transition:width .1s linear}
+.rc-scrub-thumb{position:absolute;top:50%;transform:translate(-50%,-50%);
+  width:12px;height:12px;border-radius:50%;background:var(--ac);cursor:pointer}
+.rc-time{font-family:'Orbitron',monospace;font-size:10px;color:var(--go);flex-shrink:0}
+.replay-log{flex:1;overflow-y:auto;padding:12px}
+.rl-event{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--bd2)}
+.rl-event:last-child{border-bottom:none}
+.rl-time{font-family:'Orbitron',monospace;font-size:9px;color:var(--dm);width:44px;flex-shrink:0;padding-top:2px}
+.rl-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:4px;border:2px solid}
+.rl-text{flex:1;font-size:11px;line-height:1.6;color:var(--tx)}
+.rl-text strong{color:var(--wh)}
+.rl-good{border-color:var(--gn);background:rgba(0,230,118,.15)}
+.rl-bad{border-color:var(--rd);background:rgba(255,59,59,.15)}
+.rl-info{border-color:var(--ac);background:rgba(0,200,255,.1)}
+.rl-warn{border-color:var(--go);background:rgba(255,215,0,.1)}
+
+/* ───────────── DEBRIEF ───────────── */
+.dbrief-hdr{background:linear-gradient(135deg,rgba(255,215,0,.06),rgba(255,215,0,.02));
+  border:1px solid rgba(255,215,0,.2);border-radius:4px;padding:13px;margin-bottom:12px}
+.dh-title{font-family:'Orbitron',monospace;font-size:13px;color:var(--go);font-weight:700;margin-bottom:4px}
+.dh-sub{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--dm);letter-spacing:1px}
+.score-block{background:var(--p2);border:1px solid var(--bd);border-radius:4px;padding:13px;margin-bottom:10px}
+.sbrow{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.sblabel{font-size:12px;color:var(--tx)}
+.sbval{font-family:'Orbitron',monospace;font-size:16px;font-weight:700}
+.sbar{height:4px;border-radius:2px;background:rgba(255,255,255,.06);margin-top:4px;overflow:hidden}
+.sbfill{height:100%;border-radius:2px;transition:width .8s ease}
+.timeline{display:flex;flex-direction:column}
+.tli{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--bd2)}
+.tli:last-child{border-bottom:none}
+.tlt{font-family:'Orbitron',monospace;font-size:9px;color:var(--dm);width:42px;flex-shrink:0;padding-top:2px}
+.tldot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:3px;border:2px solid}
+.tldot.good{border-color:var(--gn);background:rgba(0,230,118,.2)}
+.tldot.bad{border-color:var(--rd);background:rgba(255,59,59,.2)}
+.tldot.info{border-color:var(--ac);background:rgba(0,200,255,.1)}
+.tldot.warn{border-color:var(--go);background:rgba(255,215,0,.1)}
+.tltxt{flex:1;font-size:11px;color:var(--tx);line-height:1.6}
+.tltxt strong{color:var(--wh)}
+</style>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#00c8ff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GeoStrat">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
+</head>
+<body>
+<div class="app">
+
+<!-- ══════════════ SPLASH ══════════════ -->
+<div class="scr on" id="sp">
+  <div class="hex-bg"></div>
+  <div class="rdr"><div class="rring"></div><div class="rring"></div><div class="rring"></div><div class="rsweep"></div></div>
+  <div class="blp" style="top:28%;left:62%;animation-delay:.3s"></div>
+  <div class="blp" style="top:52%;left:22%;animation-delay:.9s"></div>
+  <div class="blp" style="top:40%;left:75%;animation-delay:1.5s;background:var(--rd);box-shadow:0 0 8px var(--rd)"></div>
+  <div style="position:relative;z-index:2;text-align:center;padding:20px">
+    <div class="mono f9 dm" style="letter-spacing:5px;margin-bottom:14px">[ CLASSIFIED · NSC · EYES ONLY ]</div>
+    <div class="sp-logo">GEOSTRAT</div>
+    <div class="sp-sub">WAR ROOM · TACTICAL MAP · COMBAT SIM</div>
+    <div style="width:50px;height:1px;background:linear-gradient(90deg,transparent,var(--ac),transparent);margin:0 auto 18px"></div>
+    <div class="sp-desc">Face-to-face war council via WebRTC.<br>Live tactical map with unit positions.<br>Cinematic combat simulations + full debrief.</div>
+    <div class="sp-pills">
+      <span class="tag tb">🎙 VOICE/VIDEO</span>
+      <span class="tag tg">🗺 TACTICAL MAP</span>
+      <span class="tag tr">💥 COMBAT SIM</span>
+      <span class="tag ty">🗳 NSC VOTE</span>
+      <span class="tag tp">📋 REPLAY</span>
+    </div>
+    <div class="sp-btns">
+      <button class="sbtn sb-b" onclick="nav('wr')">🎙 ENTER WAR ROOM</button>
+      <button class="sbtn sb-y" onclick="nav('tmap')">🗺 TACTICAL MAP</button>
+      <button class="sbtn sb-r" onclick="runSim('naval_strike')">▶ DEMO: NAVAL STRIKE</button>
+      <button class="sbtn sb-p" onclick="nav('replay')">📋 BATTLE REPLAY</button>
+    </div>
+    <div class="sp-warn">🎙 WebRTC requires browser mic/cam permission · 💥 Simulations are CSS-animated · ⚠ All weapons are fictional designations</div>
+  </div>
+</div>
+
+<!-- ══════════════ WAR ROOM ══════════════ -->
+<div class="scr" id="wr">
+  <div class="hud">
+    <div class="hud-bk" onclick="nav('sp')">← EXIT</div>
+    <div class="hud-t">🔐 SITUATION ROOM</div>
+    <div class="hud-sp"></div>
+    <div class="bx bx-live">● LIVE</div>
+  </div>
+  <div class="wr">
+    <!-- Controls -->
+    <div class="wrtop">
+      <div class="wrroom"><div class="wrcode">IND-7734</div><div class="wrinfo" id="wr-info">India NSC · P2P secure · 5/7 connected</div></div>
+      <button class="wrbtn" onclick="shareRoom()">🔗 INVITE</button>
+      <button class="wrbtn on" id="mic-btn" onclick="toggleMic()">🎙 MIC</button>
+      <button class="wrbtn" id="cam-btn" onclick="toggleCam()">📷 CAM</button>
+      <button class="wrbtn" id="hand-btn" onclick="toggleHand()">✋</button>
+    </div>
+    <!-- Video grid -->
+    <div class="vsec">
+      <div class="vhdr">
+        <div class="vhdr-l">LIVE COUNCIL &nbsp;<span class="ac" id="seat-count">6 SEATS</span></div>
+        <div>
+          <button class="vlbtn on" onclick="setVL('vg22',this)">⊞</button>
+          <button class="vlbtn" onclick="setVL('vg3',this)">⊟</button>
+          <button class="vlbtn" onclick="setVL('vg2',this)">▣</button>
+        </div>
+      </div>
+      <div class="vgrid vg22" id="vgrid">
+        <div class="vt you" data-r="pm" id="vt-you" onclick="pinTile('vt-you')">
+          <div class="vav"><div class="vscan"></div><div class="vnoise"></div>
+            <video class="vvid" id="local-vid" autoplay muted playsinline></video>
+            <div class="vico">👑</div><div class="vinit">PM</div></div>
+          <div class="vbar"><div class="vname">PRIME MINISTER</div><div class="vrole">YOU · HOST · INDIA</div></div>
+          <div class="vdot on"></div>
+          <div class="vsig"><div class="sbar on" style="height:4px"></div><div class="sbar on" style="height:7px"></div><div class="sbar on" style="height:10px"></div><div class="sbar on" style="height:13px"></div></div>
+          <div class="vmute">🔇</div><div class="vhand">✋</div>
+          <div class="vwave" id="you-wave"><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div></div>
+        </div>
+        <div class="vt spk" data-r="def" id="vt-def" onclick="pinTile('vt-def')">
+          <div class="vav"><div class="vscan"></div><div class="vnoise"></div><div class="vico">🛡</div><div class="vinit">DM</div></div>
+          <div class="vbar"><div class="vname">DEFENCE MINISTER</div><div class="vrole">Player_2 · ONLINE</div></div>
+          <div class="vdot on"></div>
+          <div class="vsig"><div class="sbar on" style="height:4px"></div><div class="sbar on" style="height:7px"></div><div class="sbar on" style="height:10px"></div><div class="sbar" style="height:13px"></div></div>
+          <div class="vmute">🔇</div><div class="vhand">✋</div>
+          <div class="vwave"><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div></div>
+        </div>
+        <div class="vt" data-r="army" id="vt-army" onclick="pinTile('vt-army')">
+          <div class="vav"><div class="vscan"></div><div class="vnoise"></div><div class="vico">⭐</div><div class="vinit">COAS</div></div>
+          <div class="vbar"><div class="vname">ARMY CHIEF (COAS)</div><div class="vrole">Player_4 · DELHI HQ</div></div>
+          <div class="vdot on"></div>
+          <div class="vsig"><div class="sbar on" style="height:4px"></div><div class="sbar on" style="height:7px"></div><div class="sbar on" style="height:10px"></div><div class="sbar on" style="height:13px"></div></div>
+          <div class="vmute">🔇</div><div class="vhand">✋</div>
+          <div class="vwave"><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div></div>
+        </div>
+        <div class="vt" data-r="air" id="vt-air" onclick="pinTile('vt-air')">
+          <div class="vav"><div class="vscan"></div><div class="vnoise"></div><div class="vico">✈</div><div class="vinit">ACM</div></div>
+          <div class="vbar"><div class="vname">AIR CHIEF MARSHAL</div><div class="vrole">Player_5 · AMBALA AFB</div></div>
+          <div class="vdot on"></div>
+          <div class="vsig"><div class="sbar on" style="height:4px"></div><div class="sbar" style="height:7px"></div><div class="sbar" style="height:10px"></div><div class="sbar" style="height:13px"></div></div>
+          <div class="vmute">🔇</div><div class="vhand">✋</div>
+          <div class="vwave"><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div></div>
+        </div>
+        <div class="vt" data-r="navy" id="vt-navy" onclick="pinTile('vt-navy')">
+          <div class="vav"><div class="vscan"></div><div class="vnoise"></div><div class="vico">⚓</div><div class="vinit">CNS</div></div>
+          <div class="vbar"><div class="vname">CHIEF OF NAVAL STAFF</div><div class="vrole">Player_6 · KOCHI NB</div></div>
+          <div class="vdot on"></div>
+          <div class="vsig"><div class="sbar on" style="height:4px"></div><div class="sbar on" style="height:7px"></div><div class="sbar on" style="height:10px"></div><div class="sbar on" style="height:13px"></div></div>
+          <div class="vhand">✋</div>
+          <div class="vwave"><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div></div>
+        </div>
+        <div class="vt off" data-r="nsa" id="vt-nsa" onclick="pinTile('vt-nsa')">
+          <div class="vav"><div class="vscan"></div><div class="vico">🔍</div><div class="vinit">NSA</div></div>
+          <div class="vbar"><div class="vname">NAT. SEC. ADVISOR</div><div class="vrole" id="nsa-role">RECONNECTING... 45s</div></div>
+          <div class="vdot off" id="nsa-dot"></div>
+          <div class="vwave"><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div></div>
+        </div>
+      </div>
+    </div>
+    <!-- Orders panel -->
+    <div class="opanel">
+      <div class="otabs">
+        <button class="otab on" onclick="otab(this,'ob-mis')">MISSIONS</button>
+        <button class="otab" onclick="otab(this,'ob-map')">TACT. MAP</button>
+        <button class="otab" onclick="otab(this,'ob-orders')">ORDERS</button>
+        <button class="otab" onclick="otab(this,'ob-vote')">NSC VOTE</button>
+        <button class="otab" onclick="otab(this,'ob-sims')">SIM</button>
+      </div>
+      <div class="obody" id="ob-mis"><div id="mis-list"></div></div>
+      <div class="obody" id="ob-map" style="display:none">
+        <div class="shdr">THEATRE — ARABIAN SEA</div>
+        <div class="tmap" id="mini-tmap"><div class="tmap-grid"></div><svg id="tmap-svg" style="position:absolute;inset:0;width:100%;height:100%"></svg><div class="tmap-hud"><div class="tmap-label">THEATRE: <span>SOUTH ASIA / ARABIAN SEA</span></div><div class="tmap-label">UNITS: <span id="unit-count">12</span></div></div></div>
+        <button class="btn btn-f btn-go mb8" onclick="nav('tmap')">🗺 FULL TACTICAL MAP →</button>
+      </div>
+      <div class="obody" id="ob-orders" style="display:none">
+        <div class="shdr">ACTIVE ORDERS</div>
+        <div id="orders-list"></div>
+      </div>
+      <div class="obody" id="ob-vote" style="display:none">
+        <div class="shdr">NSC VOTE SYSTEM</div>
+        <div class="f11 dm lh mb8">As PM, you call votes. All online ministers cast ballots in real-time. Majority decides the operation.</div>
+        <button class="btn btn-f btn-go mb8" onclick="openNSC()">🗳 CALL NSC VOTE NOW</button>
+        <div id="vote-history"></div>
+      </div>
+      <div class="obody" id="ob-sims" style="display:none">
+        <div class="shdr">LAUNCH SIMULATION</div>
+        <div id="sim-quick-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ TACTICAL MAP ══════════════ -->
+<div class="scr" id="tmap">
+  <div class="hud">
+    <div class="hud-bk" onclick="nav('wr')">← WAR ROOM</div>
+    <div class="hud-t">🗺 TACTICAL MAP</div>
+    <div class="hud-sp"></div>
+    <div class="bx bx-alert">● LIVE THREAT</div>
+  </div>
+  <div style="flex:1;position:relative;overflow:hidden;background:#010a16" id="full-tmap">
+    <!-- Full tactical map renders here -->
+    <canvas id="tmap-canvas" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
+    <div id="tmap-units"></div>
+    <!-- Map controls -->
+    <div style="position:absolute;top:10px;right:10px;display:flex;flex-direction:column;gap:5px;z-index:10">
+      <button class="rc-btn" onclick="tmapFilter('all')">ALL</button>
+      <button class="rc-btn" onclick="tmapFilter('friendly')">🔵 FRIENDLY</button>
+      <button class="rc-btn" onclick="tmapFilter('enemy')">🔴 ENEMY</button>
+      <button class="rc-btn" onclick="tmapFilter('navy')">⚓ NAVAL</button>
+    </div>
+    <!-- Legend -->
+    <div style="position:absolute;bottom:10px;left:10px;background:rgba(0,0,0,.7);
+      border:1px solid var(--bd);border-radius:3px;padding:8px;z-index:10">
+      <div class="mono f9 dm" style="letter-spacing:2px;margin-bottom:6px">LEGEND</div>
+      <div class="flex aic g8 mb8" style="gap:6px">
+        <div style="width:8px;height:8px;border-radius:50%;background:rgba(0,200,255,.6);border:2px solid var(--ac)"></div>
+        <div class="mono f9">FRIENDLY</div>
+      </div>
+      <div class="flex aic g8 mb8" style="gap:6px">
+        <div style="width:8px;height:8px;border-radius:50%;background:rgba(255,59,59,.6);border:2px solid var(--rd)"></div>
+        <div class="mono f9">HOSTILE</div>
+      </div>
+      <div class="flex aic g8" style="gap:6px">
+        <div style="width:8px;height:8px;border-radius:50%;background:rgba(255,215,0,.5);border:2px solid var(--go)"></div>
+        <div class="mono f9">NEUTRAL/ALLY</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ REPLAY SCREEN ══════════════ -->
+<div class="scr" id="replay">
+  <div class="hud">
+    <div class="hud-bk" onclick="nav('sp')">← BACK</div>
+    <div class="hud-t">📋 BATTLE REPLAY</div>
+    <div class="hud-sp"></div>
+    <div class="bx bx-gold">SPECTATOR</div>
+  </div>
+  <!-- Replay controls bar -->
+  <div class="replay-controls" style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--panel);border-bottom:1px solid var(--bd);flex-shrink:0">
+    <button class="rc-btn on" id="rplay-btn" onclick="toggleReplay()">▶ PLAY</button>
+    <button class="rc-btn" onclick="stepReplay(-1)">⏮ PREV</button>
+    <button class="rc-btn" onclick="stepReplay(1)">⏭ NEXT</button>
+    <div class="rc-scrub" id="scrub" onclick="scrubClick(event)">
+      <div class="rc-scrub-fill" id="scrub-fill" style="width:0%"></div>
+      <div class="rc-scrub-thumb" id="scrub-thumb" style="left:0%"></div>
+    </div>
+    <div class="rc-time" id="replay-clock">T+00:00</div>
+    <select style="background:var(--p3);border:1px solid var(--bd);color:var(--tx);font-family:'Share Tech Mono',monospace;font-size:9px;padding:4px 6px;border-radius:2px;outline:none" onchange="loadReplay(this.value)">
+      <option value="naval_strike">Naval Strike</option>
+      <option value="airstrike">Airstrike</option>
+      <option value="air_defense">Air Defense</option>
+      <option value="covert_sub">Submarine Op</option>
+      <option value="drone_swarm">Drone Defense</option>
+      <option value="ballistic_intercept">Ballistic Intercept</option>
+    </select>
+  </div>
+  <div class="replay-log body" id="replay-log">
+    <div class="shdr">OPERATION TIMELINE</div>
+    <div id="replay-events"></div>
+  </div>
+</div>
+
+<!-- ══════════════ NSC VOTE OVERLAY ══════════════ -->
+<div class="nsc-overlay" id="nsc-overlay">
+  <div class="nsc-modal">
+    <div class="nsc-hdr">
+      <div class="nsc-hdr-top"><div class="nsc-live"></div><div>
+        <div class="nsc-title">NSC MEETING — LIVE VOTE</div>
+        <div class="nsc-sub">India · Cabinet Committee on Security · Classified</div>
+      </div></div>
+    </div>
+    <div class="nsc-body">
+      <div class="speech sp-pm">
+        <div class="sp-who">👑 PRIME MINISTER</div>
+        <div class="sp-txt">We have confirmed intelligence of Turkish drone transfer to Pakistan and naval presence in the Arabian Sea. I am calling a vote on our response strategy. All ministers will cast their vote below.</div>
+      </div>
+      <div class="speech sp-min">
+        <div class="sp-who">🛡 DEFENCE MINISTER</div>
+        <div class="sp-txt">Sir, Army is at <strong>74% readiness</strong>. I recommend the multi-domain response — combine naval deterrence with covert interdiction. The 48-hour window is critical.</div>
+      </div>
+      <div class="speech sp-min">
+        <div class="sp-who">🔍 NSA (RECONNECTED)</div>
+        <div class="sp-txt">RAW confirms: transfer window is <strong>36 hours</strong> now, not 48. Covert interdiction must be authorized tonight. I support the covert track with naval backup.</div>
+      </div>
+      <div class="speech sp-min">
+        <div class="sp-who">🌐 FOREIGN MINISTER</div>
+        <div class="sp-txt">We have UNSC support from France and soft support from Russia. I recommend we do the <strong>diplomatic track in parallel</strong> with any military move — legitimacy matters internationally.</div>
+      </div>
+      <div class="vote-box">
+        <div class="vote-title">LIVE VOTE PROGRESS</div>
+        <div class="vote-progress" id="vote-progress">
+          <!-- Populated by JS -->
+        </div>
+        <div class="vote-options" id="vote-options">
+          <div class="vopt" id="vopt-naval" onclick="castVote('naval')">
+            <div class="vopt-ico">⚓</div>
+            <div class="vopt-text"><div class="vopt-title">Naval Deterrence</div><div class="vopt-sub">Deploy INS Vikrant · Silent · No press</div></div>
+            <div class="vopt-risk"><span class="tag ty">MED</span></div>
+          </div>
+          <div class="vopt" id="vopt-covert" onclick="castVote('covert')">
+            <div class="vopt-ico">🔍</div>
+            <div class="vopt-text"><div class="vopt-title">Covert Interdiction</div><div class="vopt-sub">RAW ops + NTRO cyber · 36hr window</div></div>
+            <div class="vopt-risk"><span class="tag ty">MED</span></div>
+          </div>
+          <div class="vopt" id="vopt-multi" onclick="castVote('multi')">
+            <div class="vopt-ico">🌐</div>
+            <div class="vopt-text"><div class="vopt-title">Multi-Domain Response</div><div class="vopt-sub">Naval + Covert + Diplomatic simultaneously</div></div>
+            <div class="vopt-risk"><span class="tag tr">HIGH</span></div>
+          </div>
+          <div class="vopt" id="vopt-diplo" onclick="castVote('diplo')">
+            <div class="vopt-ico">🕊️</div>
+            <div class="vopt-text"><div class="vopt-title">Diplomatic Track</div><div class="vopt-sub">UNSC resolution · France + Russia</div></div>
+            <div class="vopt-risk"><span class="tag tg">LOW</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="nsc-footer">
+      <button class="nsc-close-btn" onclick="closeNSC()">ADJOURN MEETING</button>
+      <button class="btn btn-gn" id="nsc-execute-btn" style="flex:1;display:none" onclick="executeVoteResult()">⚡ EXECUTE DECISION</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ COMBAT SIM ══════════════ -->
+<div id="simov">
+  <div class="simbar" id="simbar-t"></div>
+  <div class="simvp" id="simvp">
+    <div class="simsky" id="simsky"></div>
+    <div class="starlyr" id="stars"></div>
+    <div class="horizon"></div>
+    <div class="terrwrap" id="terrwrap">
+      <div class="t-sea" id="t-sea" style="display:none"><div class="wv"></div><div class="wv"></div><div class="wv"></div></div>
+      <div class="t-land" id="t-land" style="display:none"></div>
+      <div class="t-desert" id="t-desert" style="display:none"></div>
+    </div>
+    <div class="citylights" id="city-lights"></div>
+    <div id="stage"></div>
+    <div class="simhud">
+      <div><div class="shtitle" id="sh-title">OPERATION</div><div class="shsub" id="sh-sub">INITIALIZING</div><div class="shphase" id="sh-phase">PHASE 1</div></div>
+      <div style="text-align:right"><div class="shclock" id="sh-clock">T+00:00</div><div class="shout mono f9 dm" id="sh-out">STATUS: NOMINAL</div></div>
+    </div>
+    <button class="simclose" onclick="closeSim()">✕ ABORT</button>
+    <div class="simsb">
+      <div class="simchips" id="sim-chips"></div>
+      <div class="simprog"><div class="simprogf" id="sim-prog" style="width:0%"></div></div>
+      <div class="simlog" id="sim-log"></div>
+    </div>
+    <div class="simres" id="simres">
+      <div class="rcard">
+        <span class="ricon" id="r-icon">✅</span>
+        <div class="rtitle" id="r-title">MISSION COMPLETE</div>
+        <div class="rbody" id="r-body">Operation completed.</div>
+        <div class="rstats" id="r-stats"></div>
+        <button class="rdb" onclick="showDebrief()">📋 FULL DEBRIEF</button>
+        <button class="rcl" onclick="closeSim()">← RETURN TO WAR ROOM</button>
+      </div>
+    </div>
+  </div>
+  <div class="simbar" id="simbar-b"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+</div><!-- app -->
+
+<script>
+/* ═════════════════════════════════════
+   STATE
+═════════════════════════════════════ */
+const G = {
+  mic:false, cam:false, hand:false,
+  simId:null, simClock:0, simPhase:0,
+  timers:[], curSim:null,
+  votes:{naval:0,covert:0,multi:0,diplo:0},
+  myVote:null,
+  replayPlaying:false, replayClock:0, replayTimer:null, replayId:'naval_strike',
+  tmapFilter:'all', tmapUnits:[],
+  pinned:null
+};
+
+/* ═════════════════════════════════════
+   NAVIGATION — defined below as extended nav
+═════════════════════════════════════ */
+
+/* ═════════════════════════════════════
+   WAR ROOM INIT
+═════════════════════════════════════ */
+/* initWR defined below */
+
+/* ═════════════════════════════════════
+   WebRTC
+═════════════════════════════════════ */
+let localStream=null, audioCtx=null, analyser=null, speakInt=null;
+
+async function requestMic() {
+  try {
+    localStream = await navigator.mediaDevices.getUserMedia({audio:true,video:false});
+    G.mic=true; updateMicBtn();
+    setupVAD(localStream);
+    toast('🎙 Mic connected · War Room live');
+    document.getElementById('wr-info').textContent = 'India NSC · P2P secure · Voice active';
+    /* In production: for each peer, create RTCPeerConnection,
+       add localStream tracks, exchange SDP offer/answer via signalling server */
+  } catch(e) {
+    toast('⚠ No mic — demo mode active');
+    startSpeak();
+  }
+}
+
+async function toggleMic() {
+  if(!localStream){await requestMic();return;}
+  G.mic=!G.mic;
+  localStream.getAudioTracks().forEach(t=>t.enabled=G.mic);
+  updateMicBtn();
+  document.getElementById('vt-you').classList.toggle('muted',!G.mic);
+  toast(G.mic?'🎙 Mic on':'🔇 Mic muted');
+}
+
+async function toggleCam() {
+  if(!G.cam) {
+    try {
+      const vs = await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:320},audio:false});
+      const v = document.getElementById('local-vid');
+      v.srcObject=vs; v.style.display='block';
+      document.querySelector('#vt-you .vico').style.display='none';
+      document.querySelector('#vt-you .vinit').style.display='none';
+      G.cam=true;
+      document.getElementById('cam-btn').classList.add('on');
+      document.getElementById('cam-btn').textContent='📷 ON';
+      toast('📷 Camera on');
+    } catch(e){toast('⚠ Camera not available');}
+  } else {
+    const v=document.getElementById('local-vid');
+    v.srcObject=null; v.style.display='none';
+    document.querySelector('#vt-you .vico').style.display='';
+    document.querySelector('#vt-you .vinit').style.display='';
+    G.cam=false;
+    document.getElementById('cam-btn').classList.remove('on');
+    document.getElementById('cam-btn').textContent='📷 CAM';
+    toast('📷 Camera off');
+  }
+}
+
+function toggleHand() {
+  G.hand=!G.hand;
+  document.getElementById('vt-you').classList.toggle('hand',G.hand);
+  document.getElementById('hand-btn').classList.toggle('on',G.hand);
+  toast(G.hand?'✋ Hand raised':'Hand lowered');
+}
+
+function updateMicBtn() {
+  const b=document.getElementById('mic-btn');
+  b.textContent=G.mic?'🎙 ON':'🔇 OFF';
+  b.classList.toggle('on',G.mic);
+  b.classList.toggle('muted',!G.mic);
+}
+
+function setupVAD(stream) {
+  audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  const src=audioCtx.createMediaStreamSource(stream);
+  analyser=audioCtx.createAnalyser(); analyser.fftSize=256;
+  src.connect(analyser);
+  const data=new Uint8Array(analyser.frequencyBinCount);
+  const you=document.getElementById('vt-you');
+  const w=document.getElementById('you-wave');
+  speakInt=setInterval(()=>{
+    analyser.getByteFrequencyData(data);
+    const avg=data.slice(0,40).reduce((a,b)=>a+b,0)/40;
+    you.classList.toggle('spk',avg>18);
+    w.style.opacity=avg>18?'1':'0';
+  },80);
+}
+
+function startSpeak() {
+  const ids=['vt-def','vt-army','vt-air','vt-navy'];
+  let cur=null;
+  setInterval(()=>{
+    if(cur){const el=document.getElementById(cur);if(el)el.classList.remove('spk');}
+    if(Math.random()>.45){
+      cur=ids[Math.floor(Math.random()*ids.length)];
+      const el=document.getElementById(cur);
+      if(el&&!el.classList.contains('off')){
+        el.classList.add('spk');
+        setTimeout(()=>el.classList.remove('spk'),1200+Math.random()*2800);
+      }
+    }
+  },3200);
+}
+
+function startNSATimer() {
+  let s=45;
+  const interval=setInterval(()=>{
+    s--;
+    const role=document.getElementById('nsa-role');
+    if(s<=0){
+      document.getElementById('vt-nsa').classList.remove('off');
+      document.getElementById('nsa-dot').className='vdot on';
+      if(role)role.textContent='Player_7 · CONNECTED';
+      document.getElementById('wr-info').textContent='India NSC · P2P secure · 6/7 connected';
+      toast('🔍 NSA has joined the War Room');
+      clearInterval(interval);
+    } else if(role) role.textContent='RECONNECTING... '+s+'s';
+  },1000);
+}
+
+function shareRoom(){toast('🔗 Room link copied: geostrat.app/join/IND-7734');}
+function pinTile(id){
+  const t=document.getElementById(id);
+  if(!t)return;
+  const wasP=G.pinned===id;
+  document.querySelectorAll('.vt').forEach(v=>v.style.gridColumn='');
+  if(!wasP){t.style.gridColumn='span 2';G.pinned=id;}
+  else G.pinned=null;
+}
+function setVL(cls,btn){
+  document.getElementById('vgrid').className='vgrid '+cls;
+  document.querySelectorAll('.vlbtn').forEach(b=>b.classList.remove('on'));
+  if(btn)btn.classList.add('on');
+  document.querySelectorAll('.vt').forEach(v=>v.style.gridColumn='');
+  G.pinned=null;
+}
+
+/* ═════════════════════════════════════
+   ORDERS PANEL TABS
+═════════════════════════════════════ */
+function otab(btn,id){
+  document.querySelectorAll('.otab').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  document.querySelectorAll('.obody').forEach(p=>p.style.display='none');
+  document.getElementById(id).style.display='block';
+}
+
+/* ═════════════════════════════════════
+   MISSIONS
+═════════════════════════════════════ */
+const MISSIONS=[
+  {id:'naval_strike',ico:'⚓',title:'OP SEA SHIELD — Naval Interception',risk:'MED',rc:'ty',
+   desc:'INS Vikrant battle group intercepts TCG Anadolu. BrahMos-X anti-ship strike.',
+   chips:['INS Vikrant','Rafale-C ×8','BrahMos-X ×12']},
+  {id:'airstrike',ico:'✈',title:'OP VAJRA — Precision Airstrike',risk:'HIGH',rc:'tr',
+   desc:'Rafale-C deep strike on drone infrastructure. SCALP-X missiles.',
+   chips:['Rafale-C ×6','SCALP-X ×8','EW Jammer']},
+  {id:'air_defense',ico:'🛡',title:'OP KAVACH — Air Defense',risk:'LOW',rc:'tg',
+   desc:'Multi-layer drone swarm intercept. S-500 + Akash-X + HELIOS-2 laser.',
+   chips:['S-500 Surya','Akash-X ×3','HELIOS-2']},
+  {id:'covert_sub',ico:'🤿',title:'OP TRIDENT — Submarine Ambush',risk:'MED',rc:'ty',
+   desc:'Attack submarines interdict TUR resupply. Silent. Deniable.',
+   chips:['Attack Sub ×2','P-8N ASW']},
+  {id:'drone_swarm',ico:'🚁',title:'OP SWARM — Counter Drone + Laser',risk:'MED',rc:'ty',
+   desc:'30 TB3 drones inbound. EW + HELIOS-2 + kinetic backup.',
+   chips:['HELIOS-2','EW Jammer ×2','Akash-X']},
+  {id:'ballistic_intercept',ico:'☢️',title:'OP BRAHMASTRA — Ballistic Intercept',risk:'CRITICAL',rc:'tr',
+   desc:'Shaheen-III MRBM launch. Arrow-3 exo-atmospheric intercept. Nuclear shadow.',
+   chips:['Arrow-3 Interceptor','Green Pine Radar','SFC']},
+];
+function buildMissions(){
+  const el=document.getElementById('mis-list');
+  if(!el)return;
+  el.innerHTML='<div class="shdr" style="margin-bottom:8px">AVAILABLE OPERATIONS</div>'+
+    MISSIONS.map(m=>`
+    <div class="card mb8" style="cursor:pointer;border-left:3px solid ${m.rc.includes('r')?'var(--rd)':m.rc.includes('y')?'var(--go)':'var(--gn)'};transition:all .22s"
+      onclick="runSim('${m.id}')"
+      onmouseover="this.style.borderColor='var(--ac)'"
+      onmouseout="this.style.borderColor=''">
+      <div class="flex aic jsb mb6">
+        <div style="font-size:16px">${m.ico}</div>
+        <div style="font-size:12px;font-weight:700;color:var(--wh);flex:1;padding:0 8px">${m.title}</div>
+        <span class="tag ${m.rc}">${m.risk}</span>
+      </div>
+      <div class="f11 dm lh mb6">${m.desc}</div>
+      <div class="flex" style="gap:4px;flex-wrap:wrap">${m.chips.map(c=>`<span style="padding:2px 7px;border-radius:2px;font-family:'Share Tech Mono',monospace;font-size:8px;background:rgba(0,200,255,.06);border:1px solid rgba(0,200,255,.15);color:var(--ac)">${c}</span>`).join('')}</div>
+    </div>`).join('');
+}
+
+/* ═════════════════════════════════════
+   ORDERS
+═════════════════════════════════════ */
+const ORDERS=[
+  {ico:'⚓',title:'INS Vikrant — Silent Deployment',sub:'Kochi → Arabian Sea · ETA 14hr · No press',st:'EXECUTING',sc:'act'},
+  {ico:'✈',title:'Rafale-C — Ambala Readiness',sub:'6 aircraft · 30-min scramble · Armed: SCALP+MICA',st:'STANDBY',sc:''},
+  {ico:'🛰',title:'ISR Drone — Arabian Sea',sub:'Heron-TP on station · SIGINT active',st:'EXECUTING',sc:'act'},
+  {ico:'💻',title:'NTRO Cyber — TUR Networks',sub:'Phase 1 recon done · Awaiting PM auth Phase 2',st:'AWAITING AUTH',sc:''},
+  {ico:'🔍',title:'RAW — Baku Station',sub:'Azerbaijan corridor surveillance · HUMINT active',st:'ACTIVE',sc:'act'},
+];
+function buildOrders(){
+  const el=document.getElementById('orders-list');
+  if(!el)return;
+  el.innerHTML=ORDERS.map(o=>`
+    <div class="flex aic g8 mb8" style="padding:8px 10px;background:var(--p2);border:1px solid var(--bd2);border-radius:3px">
+      <div style="font-size:15px">${o.ico}</div>
+      <div style="flex:1"><div class="f12 bold" style="color:var(--wh)">${o.title}</div><div class="mono f9 dm">${o.sub}</div></div>
+      <div class="tag ${o.sc==='act'?'tg':''}" style="${o.sc==='act'?'':'border-color:var(--go);color:var(--go)'};animation:${o.sc==='act'?'bl 2s infinite':'none'}">${o.st}</div>
+    </div>`).join('');
+}
+
+function buildSimQuickList(){
+  const el=document.getElementById('sim-quick-list');
+  if(!el)return;
+  el.innerHTML=MISSIONS.map(m=>`<button class="btn btn-f mb8" onclick="runSim('${m.id}')">${m.ico} ${m.title}</button>`).join('');
+}
+
+/* ═════════════════════════════════════
+   VOTE HISTORY
+═════════════════════════════════════ */
+function buildVoteHistory(){
+  const el=document.getElementById('vote-history');
+  if(!el)return;
+  el.innerHTML=`
+    <div class="card mb8" style="border-left:3px solid var(--gn)">
+      <div class="f10 mono gn mb4">VOTE RESULT — 2hr ago</div>
+      <div class="f12 bold" style="color:var(--wh);margin-bottom:4px">Naval deployment authorized — 5/7 votes</div>
+      <div class="f11 dm">INS Vikrant silent deployment approved. Currently executing.</div>
+    </div>
+    <div class="card mb8" style="border-left:3px solid var(--go)">
+      <div class="f10 mono go mb4">VOTE PENDING</div>
+      <div class="f12 bold" style="color:var(--wh);margin-bottom:4px">NTRO Phase 2 cyber authorization</div>
+      <div class="f11 dm">Awaiting PM call for vote on offensive cyber operations.</div>
+    </div>`;
+}
+
+/* ═════════════════════════════════════
+   MINI MAP (War Room tab)
+═════════════════════════════════════ */
+const MAP_UNITS=[
+  {x:62,y:46,type:'friendly',label:'IND',emoji:'🔵'},
+  {x:32,y:30,type:'enemy',label:'TUR',emoji:'🔴'},
+  {x:53,y:72,type:'friendly',label:'CV-01',emoji:'🚢'},
+  {x:62,y:72,type:'enemy',label:'TCG',emoji:'🔴'},
+  {x:56,y:40,type:'neutral',label:'PAK',emoji:'🟡'},
+  {x:25,y:55,type:'neutral',label:'ALLY',emoji:'🟢'},
+  {x:70,y:55,type:'friendly',label:'SUB',emoji:'🔵'},
+  {x:44,y:64,type:'friendly',label:'P-8N',emoji:'✈'},
+];
+
+function buildMiniMap(){
+  const svg=document.getElementById('tmap-svg');
+  if(!svg)return;
+  svg.innerHTML='';
+  // Sea area
+  const sea=document.createElementNS('http://www.w3.org/2000/svg','rect');
+  sea.setAttribute('x','30%');sea.setAttribute('y','50%');sea.setAttribute('width','45%');sea.setAttribute('height','40%');
+  sea.setAttribute('fill','rgba(0,30,60,.4)');sea.setAttribute('rx','2');
+  svg.appendChild(sea);
+  // Threat line
+  const line=document.createElementNS('http://www.w3.org/2000/svg','line');
+  line.setAttribute('x1','32%');line.setAttribute('y1','30%');
+  line.setAttribute('x2','53%');line.setAttribute('y2','72%');
+  line.setAttribute('stroke','rgba(255,59,59,.3)');line.setAttribute('stroke-width','1');
+  line.setAttribute('stroke-dasharray','3 2');svg.appendChild(line);
+  // Units
+  MAP_UNITS.forEach(u=>{
+    const g=document.createElementNS('http://www.w3.org/2000/svg','g');
+    const c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c.setAttribute('cx',u.x+'%');c.setAttribute('cy',u.y+'%');c.setAttribute('r','5');
+    c.setAttribute('fill',u.type==='friendly'?'rgba(0,200,255,.6)':u.type==='enemy'?'rgba(255,59,59,.6)':'rgba(255,215,0,.5)');
+    c.setAttribute('stroke',u.type==='friendly'?'var(--ac)':u.type==='enemy'?'var(--rd)':'var(--go)');
+    c.setAttribute('stroke-width','1.5');
+    const t=document.createElementNS('http://www.w3.org/2000/svg','text');
+    t.setAttribute('x',u.x+'%');t.setAttribute('y',(u.y+8)+'%');
+    t.setAttribute('text-anchor','middle');t.setAttribute('font-family','Share Tech Mono,monospace');
+    t.setAttribute('font-size','7');
+    t.setAttribute('fill',u.type==='friendly'?'rgba(0,200,255,.8)':u.type==='enemy'?'rgba(255,100,100,.8)':'rgba(255,215,0,.8)');
+    t.textContent=u.label;
+    g.appendChild(c);g.appendChild(t);svg.appendChild(g);
+  });
+  document.getElementById('unit-count').textContent=MAP_UNITS.length;
+}
+
+/* ═════════════════════════════════════
+   FULL TACTICAL MAP
+═════════════════════════════════════ */
+function initTMap(){
+  const canvas=document.getElementById('tmap-canvas');
+  if(!canvas)return;
+  const container=document.getElementById('full-tmap');
+  canvas.width=container.offsetWidth||360;
+  canvas.height=container.offsetHeight||480;
+  const ctx=canvas.getContext('2d');
+  drawTMap(ctx,canvas.width,canvas.height);
+  // Animate units
+  animateTMapUnits();
+}
+
+function drawTMap(ctx,W,H){
+  // Background ocean
+  ctx.fillStyle='#010a16';ctx.fillRect(0,0,W,H);
+  // Grid
+  ctx.strokeStyle='rgba(0,180,255,.04)';ctx.lineWidth=1;
+  for(let x=0;x<W;x+=28){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let y=0;y<H;y+=28){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  // Sea area (Arabian Sea)
+  ctx.fillStyle='rgba(0,30,60,.5)';
+  ctx.fillRect(W*.25,H*.45,W*.5,H*.45);
+  // Land masses
+  ctx.fillStyle='rgba(30,50,18,.6)';
+  ctx.fillRect(W*.5,0,W*.45,H*.55); // India subcontinent hint
+  ctx.fillRect(0,0,W*.35,H*.4);     // Arabian peninsula hint
+  ctx.fillStyle='rgba(40,30,10,.4)';
+  ctx.fillRect(W*.1,H*.05,W*.25,H*.3); // Turkey region
+  // Horizon line
+  ctx.strokeStyle='rgba(0,200,255,.08)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(0,H*.45);ctx.lineTo(W,H*.45);ctx.stroke();
+  // Threat vector line
+  ctx.strokeStyle='rgba(255,59,59,.35)';ctx.lineWidth=1.5;ctx.setLineDash([4,3]);
+  ctx.beginPath();ctx.moveTo(W*.32,H*.3);ctx.lineTo(W*.53,H*.72);ctx.stroke();ctx.setLineDash([]);
+  // Range ring around carrier
+  ctx.strokeStyle='rgba(0,200,255,.12)';ctx.lineWidth=1;ctx.setLineDash([2,4]);
+  ctx.beginPath();ctx.arc(W*.53,H*.72,W*.15,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);
+  // Labels
+  ctx.font='8px Share Tech Mono,monospace';
+  ctx.fillStyle='rgba(0,200,255,.3)';
+  ctx.fillText('ARABIAN SEA',W*.3,H*.65);
+  ctx.fillStyle='rgba(255,59,59,.3)';
+  ctx.fillText('TURKEY REGION',W*.12,H*.15);
+  ctx.fillStyle='rgba(0,200,255,.25)';
+  ctx.fillText('INDIA',W*.62,H*.2);
+  ctx.fillStyle='rgba(255,150,0,.25)';
+  ctx.fillText('PAKISTAN',W*.52,H*.38);
+}
+
+function animateTMapUnits(){
+  const container=document.getElementById('tmap-units');
+  if(!container)return;
+  container.innerHTML='';
+  const W=document.getElementById('full-tmap').offsetWidth||360;
+  const H=document.getElementById('full-tmap').offsetHeight||480;
+  const fullUnits=[
+    {x:63,y:19,type:'friendly',label:'IND CMD',icon:'👑'},
+    {x:32,y:30,type:'enemy',label:'TUR NSC',icon:'⚠'},
+    {x:53,y:72,type:'friendly',label:'INS Vikrant',icon:'🚢'},
+    {x:63,y:72,type:'enemy',label:'TCG Anadolu',icon:'🔴'},
+    {x:56,y:38,type:'neutral',label:'PAK',icon:'🟡'},
+    {x:22,y:55,type:'neutral',label:'ALLY',icon:'🟢'},
+    {x:70,y:55,type:'friendly',label:'Sub Vipra',icon:'🤿'},
+    {x:44,y:63,type:'friendly',label:'P-8N ISR',icon:'✈'},
+    {x:58,y:58,type:'friendly',label:'Rafale CAP',icon:'✈'},
+    {x:60,y:65,type:'friendly',label:'Destroyer',icon:'🚢'},
+    {x:50,y:65,type:'enemy',label:'TUR Escort',icon:'🔴'},
+    {x:57,y:75,type:'friendly',label:'Frigate',icon:'🚢'},
+  ];
+  fullUnits.forEach(u=>{
+    const div=document.createElement('div');
+    div.className='unit unit-'+u.type;
+    div.style.cssText=`left:${u.x}%;top:${u.y}%;position:absolute;transform:translate(-50%,-50%);cursor:pointer`;
+    div.innerHTML=`<div class="unit-dot"></div><div class="unit-label">${u.label}</div>`;
+    div.title=u.label;
+    div.onclick=()=>toast('📍 '+u.label+' — '+u.type.toUpperCase());
+    container.appendChild(div);
+    // Animate slight movement
+    if(u.type==='friendly'){
+      setInterval(()=>{
+        const dx=(Math.random()-.5)*.5, dy=(Math.random()-.5)*.5;
+        div.style.left=(u.x+dx)+'%'; div.style.top=(u.y+dy)+'%';
+        div.style.transition='left .8s ease, top .8s ease';
+      },3000+Math.random()*2000);
+    }
+  });
+}
+
+function tmapFilter(f){
+  G.tmapFilter=f;
+  document.querySelectorAll('.unit').forEach(u=>{
+    if(f==='all') u.style.display='';
+    else if(f==='friendly') u.style.display=u.classList.contains('unit-friendly')?'':'none';
+    else if(f==='enemy') u.style.display=u.classList.contains('unit-enemy')?'':'none';
+    else if(f==='navy') u.style.display=u.title.includes('Sub')||u.title.includes('Vikrant')||u.title.includes('Frigate')||u.title.includes('Destroyer')||u.title.includes('TCG')?'':'none';
+  });
+}
+
+/* ═════════════════════════════════════
+   NSC VOTE SYSTEM
+═════════════════════════════════════ */
+const MINISTERS=['Defence Minister','NSA','Foreign Minister','Home Minister','Finance Minister'];
+// Simulate other ministers voting over time
+function openNSC(){
+  // Reset votes
+  G.votes={naval:0,covert:0,multi:0,diplo:0};
+  G.myVote=null;
+  document.querySelectorAll('.vopt').forEach(v=>v.classList.remove('voted'));
+  document.getElementById('nsc-execute-btn').style.display='none';
+  buildVoteProgress();
+  document.getElementById('nsc-overlay').classList.add('on');
+  // Simulate other ministers voting over 8 seconds
+  const ops=['naval','covert','multi','diplo'];
+  MINISTERS.forEach((m,i)=>{
+    setTimeout(()=>{
+      const pick=ops[Math.floor(Math.random()*ops.length)];
+      G.votes[pick]++;
+      buildVoteProgress();
+      toast('🗳 '+m+' voted');
+      checkVoteComplete();
+    },1500+(i*1200));
+  });
+}
+
+function castVote(opt){
+  if(G.myVote){toast('⚠ You have already voted');return;}
+  G.myVote=opt;
+  G.votes[opt]++;
+  document.getElementById('vopt-'+opt).classList.add('voted');
+  buildVoteProgress();
+  toast('✓ Your vote recorded: '+opt.toUpperCase());
+  checkVoteComplete();
+}
+
+function buildVoteProgress(){
+  const el=document.getElementById('vote-progress');
+  if(!el)return;
+  const opts=['naval','covert','multi','diplo'];
+  const labels={naval:'Naval',covert:'Covert',multi:'Multi-Domain',diplo:'Diplomatic'};
+  const total=Object.values(G.votes).reduce((a,b)=>a+b,0)||1;
+  el.innerHTML=opts.map(o=>`
+    <div class="vp-row">
+      <div class="vp-name">${labels[o]}</div>
+      <div class="vp-bar-wrap"><div class="vp-bar" style="width:${(G.votes[o]/total*100)}%;background:${G.votes[o]===Math.max(...Object.values(G.votes))?'var(--gn)':'var(--ac)'}"></div></div>
+      <div class="vp-val" style="color:${G.votes[o]===Math.max(...Object.values(G.votes))?'var(--gn)':'var(--ac)'}">${G.votes[o]}</div>
+    </div>`).join('');
+}
+
+function checkVoteComplete(){
+  const total=Object.values(G.votes).reduce((a,b)=>a+b,0);
+  if(total>=6&&G.myVote){ // All ministers + PM voted
+    document.getElementById('nsc-execute-btn').style.display='flex';
+    const winner=Object.entries(G.votes).sort((a,b)=>b[1]-a[1])[0][0];
+    toast('🗳 Vote complete — '+winner.toUpperCase()+' wins with '+G.votes[winner]+' votes');
+  }
+}
+
+function executeVoteResult(){
+  const winner=Object.entries(G.votes).sort((a,b)=>b[1]-a[1])[0][0];
+  closeNSC();
+  const simMap={naval:'naval_strike',covert:'covert_sub',multi:'naval_strike',diplo:'airstrike'};
+  toast('⚡ NSC decision: '+winner.toUpperCase()+' — Executing operation');
+  setTimeout(()=>runSim(simMap[winner]||'naval_strike'),800);
+}
+
+function closeNSC(){document.getElementById('nsc-overlay').classList.remove('on');}
+
+/* ═════════════════════════════════════
+   COMBAT SIMULATION
+═════════════════════════════════════ */
+const SIMS={
+  naval_strike:{
+    title:'OPERATION SEA SHIELD',sub:'INS VIKRANT · ARABIAN SEA',
+    terrain:'sea',sky:'',phases:['DEPLOYMENT','APPROACH','ENGAGEMENT','RESOLUTION'],
+    assets:['INS Vikrant (CV)','Su-37 CAP ×8','BrahMos-X ×12','Attack Sub ×2','P-8N ASW'],
+    steps:[
+      {t:400,p:0,l:{c:'li',x:'INS Vikrant battle group silent deployment — 24kt · Radio silence'},
+       f:s=>{ship(s,20,'f');ship(s,66,'e');}},
+      {t:1800,p:0,l:{c:'li',x:'Su-37 CAP launched · Air umbrella established over battle group'},
+       f:s=>{ac(s,'🛩',18,34,'f');ac(s,'🛩',22,28,'f');}},
+      {t:3200,p:1,l:{c:'lw',x:'TCG Anadolu radar lock at 280km · TB3 drones visible on deck'},
+       f:s=>{ac(s,'🛩',66,32,'e');ac(s,'🛩',70,27,'e');}},
+      {t:4600,p:1,l:{c:'lw',x:'8 TB3 drones airborne from TCG Anadolu — inbound hostile'},
+       f:s=>{for(let i=0;i<8;i++)drone(s,64+i*2.2,40-i*1.5,'e');}},
+      {t:6000,p:2,l:{c:'lg',x:'BrahMos-X LAUNCH — Mach 2.8 · impact T+90sec · 2 rounds'},
+       f:s=>{msl(s,22,52,65,62,'f');msl(s,24,50,67,64,'f');}},
+      {t:7400,p:2,l:{c:'lg',x:'Su-37: 6 of 8 TB3 drones destroyed · Air superiority maintained'},
+       f:s=>{exp(s,66,40);exp(s,70,37);setTimeout(()=>exp(s,68,43),350);}},
+      {t:8800,p:2,l:{c:'lg',x:'BrahMos-X IMPACT — 2 hits · TCG Anadolu mission kill · Fires confirmed'},
+       f:s=>{exp(s,64,62);setTimeout(()=>exp(s,66,64),280);setTimeout(()=>exp(s,62,60),550);}},
+      {t:10200,p:3,l:{c:'li',x:'TCG Anadolu breaking off · Heading northwest · Reduced speed'},f:()=>{}},
+      {t:11600,p:3,l:{c:'lg',x:'MISSION SUCCESS · Arabian Sea secured · Turkish naval presence withdrawing'},
+       f:s=>result(s,true,'MISSION COMPLETE','TCG Anadolu neutralized. Arabian Sea secured.',
+         [{v:'2',l:'Ships Hit'},{v:'6/8',l:'Drones Down'},{v:'0',l:'Lost'},{v:'19min',l:'Duration'}])}
+    ]
+  },
+  airstrike:{
+    title:'OPERATION VAJRA',sub:'RAFALE-C DEEP STRIKE · CROSS BORDER',
+    terrain:'land',sky:'dawn',phases:['BRIEFING','INGRESS','STRIKE','EGRESS'],
+    assets:['Rafale-C ×6','SCALP-X ×8','Jammer Pod','AWACS','Su-37 CAP'],
+    steps:[
+      {t:400,p:0,l:{c:'li',x:'Strike package airborne Ambala — NOE profile · Radio silence'},
+       f:s=>{ac(s,'🛩',5,28,'f');ac(s,'🛩',8,24,'f');ac(s,'🛩',11,31,'f');}},
+      {t:1800,p:0,l:{c:'li',x:'AWACS coverage confirmed · IAF Netra-II tracking — airspace clear'},
+       f:s=>{ac(s,'🛫',14,16,'f');}},
+      {t:3200,p:1,l:{c:'lw',x:'PAF radar activation · F-16 scramble from Sargodha AFB'},
+       f:s=>{ac(s,'🛩',76,30,'e');ac(s,'🛩',80,26,'e');}},
+      {t:4600,p:1,l:{c:'li',x:'EW jammer active — PAF radar disrupted · 40sec window secured'},f:()=>{}},
+      {t:5800,p:2,l:{c:'lg',x:'SCALP-X RELEASED — 8 rounds · GPS + terrain-following · Mach 0.9'},
+       f:s=>{msl(s,26,28,64,52,'f');msl(s,28,30,66,54,'f');msl(s,24,26,62,50,'f');}},
+      {t:7200,p:2,l:{c:'lg',x:'TARGET 1 DESTROYED — drone storage hangar · BDA positive'},
+       f:s=>{exp(s,64,52);setTimeout(()=>exp(s,62,54),300);}},
+      {t:8400,p:2,l:{c:'lg',x:'TARGET 2 HIT — maintenance facility · Secondary explosions'},
+       f:s=>{exp(s,68,54);setTimeout(()=>exp(s,70,52),400);setTimeout(()=>exp(s,66,56),700);}},
+      {t:9600,p:3,l:{c:'lw',x:'PAF F-16 intercept attempt · Su-37 CAP engaged · 1 F-16 damaged'},
+       f:s=>{exp(s,72,32);}},
+      {t:11000,p:3,l:{c:'lg',x:'Strike package returning — all 6 Rafale accounted for · Mission complete'},
+       f:s=>result(s,true,'STRIKE SUCCESSFUL','Both targets destroyed. All aircraft returned safely.',
+         [{v:'8/8',l:'Missiles Hit'},{v:'2',l:'Targets Down'},{v:'0',l:'Aircraft Lost'},{v:'22min',l:'Duration'}])}
+    ]
+  },
+  air_defense:{
+    title:'OPERATION KAVACH',sub:'MULTI-LAYER AIR DEFENSE · ACTIVE',
+    terrain:'land',sky:'',phases:['DETECTION','TRACKING','INTERCEPT','ASSESSMENT'],
+    assets:['S-500 Surya','Akash-X ×3','HELIOS-2 Laser','Su-37 ×4 CAP','Radar Net'],
+    steps:[
+      {t:400,p:0,l:{c:'lw',x:'THREAT ALERT — 40 TB3 contacts inbound · 180km · Speed 150kt'},
+       f:s=>{for(let i=0;i<16;i++)drone(s,70+i*1.8,14+i*1.4,'e');}},
+      {t:1800,p:0,l:{c:'li',x:'S-500 Surya tracking — intercept window opens at 120km'},f:()=>{}},
+      {t:3200,p:1,l:{c:'lg',x:'S-500 LAUNCH — 8 interceptors · Engaging first wave 120km'},
+       f:s=>{sam(s,18,78);sam(s,24,78);sam(s,30,78);sam(s,36,78);}},
+      {t:4600,p:1,l:{c:'lg',x:'S-500 intercepts: 12 drones destroyed · 28 remaining · Akash-X engaging'},
+       f:s=>{for(let i=0;i<5;i++)setTimeout(()=>exp(s,66+i*2.5,26+i*2),i*180);}},
+      {t:6000,p:2,l:{c:'lg',x:'Akash-X: 10 more intercepts · HELIOS-2 laser engaging close-range threats'},
+       f:s=>{laser(s,16,72,58,52);laser(s,16,72,54,56);int(s,58,52);int(s,54,56);}},
+      {t:7400,p:2,l:{c:'lg',x:'HELIOS-2: 8 more drones destroyed · 1 burn per 5sec · Performing above spec'},
+       f:s=>{for(let i=0;i<4;i++)setTimeout(()=>{laser(s,16,72,62+i*3,44+i*3);setTimeout(()=>exp(s,62+i*3,44+i*3),600);},i*450);}},
+      {t:8800,p:3,l:{c:'lw',x:'6 drones penetrating — Su-37 CAP engaging with MICA missiles'},
+       f:s=>{ac(s,'🛩',30,32,'f');msl(s,30,32,60,48,'f');}},
+      {t:10200,p:3,l:{c:'lg',x:'Su-37 kills 5 — 1 minor drone impact on non-critical area'},
+       f:s=>{exp(s,56,52);exp(s,60,48);}},
+      {t:11600,p:3,l:{c:'lg',x:'THREAT NEUTRALIZED — 39/40 destroyed · 97.5% intercept rate · Defense held'},
+       f:s=>result(s,true,'DEFENSE SUCCESSFUL','39 of 40 drones intercepted. Multi-layer defense held.',
+         [{v:'39/40',l:'Intercepted'},{v:'97.5%',l:'Kill Rate'},{v:'1',l:'Minor Hit'},{v:'0',l:'Casualties'}])}
+    ]
+  },
+  covert_sub:{
+    title:'OPERATION TRIDENT',sub:'SUBMARINE INTERDICTION · SILENT WATER',
+    terrain:'sea',sky:'',phases:['DIVE','APPROACH','ENGAGEMENT','EXFIL'],
+    assets:['INS Arhan SSBN','Attack Sub Vipra','Attack Sub Khanderi','P-8N ASW'],
+    steps:[
+      {t:400,p:0,l:{c:'li',x:'INS Vipra dived — silent running · 200m depth · 12kt'},
+       f:s=>{ship(s,62,'e');}},
+      {t:1800,p:0,l:{c:'li',x:'TUR resupply vessel confirmed · P-8N sonobuoy net active'},
+       f:s=>{ac(s,'🛫',48,16,'f');}},
+      {t:3200,p:1,l:{c:'lw',x:'TUR escort destroyer — active sonar sweep · Hold position · 6min'},
+       f:s=>{ship(s,68,'e');}},
+      {t:4600,p:1,l:{c:'li',x:'P-8N: destroyer course change · Window open · T minus 4min'},f:()=>{}},
+      {t:6000,p:2,l:{c:'lg',x:'TORPEDO LAUNCH — 2x heavyweight · 12km · TUR supply vessel'},
+       f:s=>{torp(s,24,66,62,68);torp(s,22,67,60,70);}},
+      {t:7600,p:2,l:{c:'lg',x:'IMPACT — TUR vessel hit · Taking water · Emergency signals'},
+       f:s=>{exp(s,60,70);setTimeout(()=>exp(s,62,68),400);setTimeout(()=>exp(s,58,72),700);}},
+      {t:8800,p:2,l:{c:'lw',x:'TUR destroyer active — depth charges dropping · Evasive'},
+       f:s=>{dc(s,28,75);dc(s,24,70);}},
+      {t:10200,p:3,l:{c:'lg',x:'SUBMARINE CLEAR — depth charges evaded · Heading south'},f:()=>{}},
+      {t:11600,p:3,l:{c:'lg',x:'INTERDICTION COMPLETE — TUR route severed · Zero detection'},
+       f:s=>result(s,true,'INTERDICTION COMPLETE','Vessel sunk. Transfer route severed. Submarines returned undetected.',
+         [{v:'1',l:'Vessel Sunk'},{v:'0',l:'Sub Detected'},{v:'48hr',l:'Route Blocked'},{v:'DENIABLE',l:'Attribution'}])}
+    ]
+  },
+  drone_swarm:{
+    title:'OPERATION SWARM SHIELD',sub:'COUNTER-DRONE · EW + HELIOS-2',
+    terrain:'land',sky:'',phases:['DETECTION','EW DISRUPTION','LASER ENGAGE','KINETIC'],
+    assets:['HELIOS-2 Laser','EW Jammer ×2','Akash-X ×2','Tejas CAP ×2','Radar Grid'],
+    steps:[
+      {t:400,p:0,l:{c:'lw',x:'MASS DRONE ALERT — 30 TB3 · Control signal: PAK territory'},
+       f:s=>{for(let i=0;i<18;i++)drone(s,66+i*1.8,12+i*2,'e');}},
+      {t:1800,p:1,l:{c:'li',x:'EW jammers activated — disrupting TB3 datalink · 40% losing guidance'},f:()=>{}},
+      {t:3000,p:1,l:{c:'lg',x:'12 drones spiraling — EW highly effective · 18 remaining'},
+       f:s=>{for(let i=0;i<5;i++)setTimeout(()=>exp(s,64+i*3,28+i*2.5),i*220);}},
+      {t:4400,p:2,l:{c:'li',x:'HELIOS-2 power online — 1 drone per 5sec burn cycle'},f:()=>{}},
+      {t:5600,p:2,l:{c:'lg',x:'HELIOS-2: 8 drones destroyed · High-energy laser on target'},
+       f:s=>{for(let i=0;i<4;i++)setTimeout(()=>{laser(s,18,74,68+i*2.5,38+i*2);setTimeout(()=>exp(s,68+i*2.5,38+i*2),600);},i*500);}},
+      {t:7200,p:2,l:{c:'lg',x:'HELIOS-2 continues: 6 more down · 4 remaining · Akash-X engaging'},
+       f:s=>{sam(s,26,80);sam(s,32,80);for(let i=0;i<3;i++)setTimeout(()=>int(s,66+i*4,50+i*2),i*300);}},
+      {t:8600,p:3,l:{c:'lw',x:'2 penetrating — Tejas CAP engaging with guns'},
+       f:s=>{ac(s,'🛩',26,34,'f');msl(s,26,34,64,50,'f');}},
+      {t:10000,p:3,l:{c:'lg',x:'SWARM ELIMINATED — 30/30 destroyed · Zero penetration'},
+       f:s=>{for(let i=0;i<4;i++)setTimeout(()=>exp(s,62+i*3,46+i*2),i*200);
+         setTimeout(()=>result(s,true,'PERFECT INTERCEPT','All 30 drones destroyed. Zero penetration.',
+           [{v:'30/30',l:'Drones Killed'},{v:'100%',l:'Kill Rate'},{v:'0',l:'Ground Hits'},{v:'NONE',l:'Casualties'}]),2000);}}
+    ]
+  },
+  ballistic_intercept:{
+    title:'OPERATION BRAHMASTRA',sub:'EXO-ATMOSPHERIC INTERCEPT · NUCLEAR',
+    terrain:'space',sky:'',phases:['LAUNCH DETECT','TRACK','INTERCEPT','ASSESS'],
+    assets:['Arrow-3 Interceptor','Green Pine Radar','Agni-VI Track','JSS Satellite','SFC Command'],
+    steps:[
+      {t:400,p:0,l:{c:'lb',x:'NUCLEAR ALERT — Shaheen-III MRBM launch · Thar Desert · 1800km range'},
+       f:s=>{msl(s,74,80,14,8,'e');}},
+      {t:1800,p:0,l:{c:'lb',x:'Trajectory computed — impact: Jodhpur · Time to target: 8min'},f:()=>{}},
+      {t:3200,p:1,l:{c:'li',x:'Green Pine radar lock · Arrow-3 interceptor armed · Exo-atm window'},f:()=>{}},
+      {t:4600,p:1,l:{c:'lw',x:'PM AUTHORIZES INTERCEPT — Nuclear protocol ACTIVE · SFC DEFCON 2'},f:()=>{}},
+      {t:5800,p:2,l:{c:'lg',x:'ARROW-3 LAUNCH — Mach 9 · Exo-atmospheric kill vehicle deployed'},
+       f:s=>{msl(s,20,76,40,22,'f');}},
+      {t:7400,p:2,l:{c:'lw',x:'INTERCEPT WINDOW — T+45sec · Kill vehicle tracking warhead'},f:()=>{}},
+      {t:8800,p:2,l:{c:'lg',x:'HIT-TO-KILL CONFIRMED — warhead destroyed at 180km altitude'},
+       f:s=>{exp(s,40,22);setTimeout(()=>exp(s,42,20),250);setTimeout(()=>exp(s,38,24),500);}},
+      {t:10200,p:3,l:{c:'lg',x:'THREAT ELIMINATED — debris field over uninhabited area'},f:()=>{}},
+      {t:11600,p:3,l:{c:'li',x:'NSC CONVENING — nuclear response options under review'},
+       f:s=>result(s,true,'INTERCEPT SUCCESSFUL','Warhead destroyed at 180km. No ground impact. Nuclear protocol active.',
+         [{v:'100%',l:'Intercept'},{v:'180km',l:'Kill Alt'},{v:'ZERO',l:'Ground Impact'},{v:'DEFCON 2',l:'Alert'}])}
+    ]
+  }
+};
+
+let clockInt=null;
+
+function runSim(id){
+  const data=SIMS[id];
+  if(!data){toast('⚠ Sim not found');return;}
+  G.curSim=data; G.simId=id;
+  const ov=document.getElementById('simov');
+  ov.style.display='flex';
+  requestAnimationFrame(()=>{ov.style.opacity='1';});
+  setTimeout(()=>{document.getElementById('simbar-t').classList.add('open');document.getElementById('simbar-b').classList.add('open');},100);
+  // Reset
+  document.getElementById('stage').innerHTML='';
+  document.getElementById('sim-log').innerHTML='';
+  document.getElementById('sim-chips').innerHTML='';
+  document.getElementById('simres').classList.remove('on');
+  document.getElementById('sim-prog').style.width='0%';
+  G.simClock=0;G.simPhase=0;
+  G.timers.forEach(clearTimeout);G.timers=[];
+  clearInterval(clockInt);
+  // HUD
+  document.getElementById('sh-title').textContent=data.title;
+  document.getElementById('sh-sub').textContent=data.sub;
+  document.getElementById('sh-phase').textContent='PHASE 1 — '+data.phases[0];
+  document.getElementById('sh-out').textContent='STATUS: NOMINAL';
+  // Sky + terrain
+  document.getElementById('simsky').className='simsky'+(data.sky?' '+data.sky:'');
+  ['t-sea','t-land','t-desert'].forEach(t=>document.getElementById(t).style.display='none');
+  document.getElementById('terrwrap').style.height='35%';
+  document.getElementById('city-lights').style.display='none';
+  if(data.terrain==='sea') document.getElementById('t-sea').style.display='block';
+  else if(data.terrain==='land'){document.getElementById('t-land').style.display='block';makeCityLights();}
+  else if(data.terrain==='desert') document.getElementById('t-desert').style.display='block';
+  else if(data.terrain==='space') document.getElementById('terrwrap').style.height='0';
+  makeStars(data.terrain==='space'?110:data.terrain==='sea'?55:18);
+  // Chips
+  const cr=document.getElementById('sim-chips');
+  data.assets.forEach(a=>{const c=document.createElement('div');c.className='smc';c.textContent=a;cr.appendChild(c);});
+  // Clock
+  clockInt=setInterval(()=>{
+    G.simClock++;
+    const m=String(Math.floor(G.simClock/60)).padStart(2,'0');
+    const s=String(G.simClock%60).padStart(2,'0');
+    document.getElementById('sh-clock').textContent='T+'+m+':'+s;
+  },1000);
+  // Run steps
+  const stage=document.getElementById('stage');
+  const totalT=data.steps[data.steps.length-1].t;
+  data.steps.forEach(step=>{
+    const tid=setTimeout(()=>{
+      if(G.simId!==id)return;
+      if(step.p!==G.simPhase){G.simPhase=step.p;document.getElementById('sh-phase').textContent='PHASE '+(step.p+1)+' — '+data.phases[step.p];}
+      document.getElementById('sim-prog').style.width=((step.t/totalT)*100)+'%';
+      addLog(step.l);
+      if(step.f)step.f(stage);
+    },step.t);
+    G.timers.push(tid);
+  });
+}
+
+/* Stage helpers */
+function makeStars(n){
+  const c=document.getElementById('stars');c.innerHTML='';
+  for(let i=0;i<n;i++){
+    const s=document.createElement('div');s.className='strd';
+    const sz=Math.random()*2+.5;
+    s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*60}%;left:${Math.random()*100}%;animation-delay:${Math.random()*3}s;animation-duration:${2+Math.random()*3}s`;
+    c.appendChild(s);
+  }
+}
+function makeCityLights(){
+  const c=document.getElementById('city-lights');
+  c.style.display='block'; c.innerHTML='';
+  for(let i=0;i<40;i++){
+    const l=document.createElement('div');l.className='cl';
+    l.style.cssText=`left:${Math.random()*80+10}%;animation-delay:${Math.random()*2}s`;
+    c.appendChild(l);
+  }
+}
+function ship(stage,lx,type){
+  const wrap=document.createElement('div');
+  wrap.style.cssText=`position:absolute;left:${lx}%;bottom:0;width:86px;height:70px;transition:left 5s linear`;
+  const body=document.createElement('div');body.className='sship-body';
+  const deck=document.createElement('div');deck.className='sship-deck';
+  const tower=document.createElement('div');tower.className='sship-tower';
+  const radar=document.createElement('div');radar.className='sship-radar';
+  const wake=document.createElement('div');wake.className='sship-wake';
+  body.append(deck,tower,radar);wrap.append(body,wake);
+  wrap.className='sship '+(type==='e'?'e':'');
+  stage.appendChild(wrap);
+  setTimeout(()=>{wrap.style.left=(lx+(type==='f'?3:-3))+'%';},100);
+}
+function ac(stage,emoji,lx,ty,type){
+  const el=document.createElement('div');
+  el.className='sac'+(type==='e'?' e flip':'');
+  el.style.cssText=`left:${lx}%;top:${ty}%`;
+  el.textContent=emoji; stage.appendChild(el);
+  const dx=type==='f'?8+Math.random()*12:-(8+Math.random()*12);
+  const dy=(Math.random()-.5)*8;
+  setTimeout(()=>{el.style.left=(lx+dx)+'%';el.style.top=(ty+dy)+'%';el.style.transition='left 4s linear,top 4s linear';},50);
+}
+function drone(stage,lx,ty,type){
+  const el=document.createElement('div');el.className='sdrone '+(type==='e'?'e':'f');
+  el.style.cssText=`left:${lx}%;top:${ty}%`;el.textContent='◆';stage.appendChild(el);
+  const dx=type==='e'?-(12+Math.random()*18):5+Math.random()*8;
+  const dy=type==='e'?10+Math.random()*12:-(2+Math.random()*5);
+  setTimeout(()=>{el.style.left=(lx+dx)+'%';el.style.top=(ty+dy)+'%';el.style.transition='left 7s linear,top 7s linear';},50);
+}
+function msl(stage,fx,fy,tx,ty,type){
+  const el=document.createElement('div');el.className='smsl '+type;
+  const ang=Math.atan2(ty-fy,tx-fx)*180/Math.PI;
+  el.style.cssText=`left:${fx}%;top:${fy}%;transform:rotate(${ang}deg)`;
+  stage.appendChild(el);
+  const dur=Math.sqrt((tx-fx)**2+(ty-fy)**2)*35;
+  setTimeout(()=>{el.style.left=tx+'%';el.style.top=ty+'%';el.style.transition=`left ${dur}ms linear,top ${dur}ms linear`;},50);
+  setTimeout(()=>el.remove(),dur+200);
+}
+function torp(stage,fx,fy,tx,ty){
+  const el=document.createElement('div');el.className='storpedo';
+  const ang=Math.atan2(ty-fy,tx-fx)*180/Math.PI;
+  el.style.cssText=`left:${fx}%;top:${fy}%;transform:rotate(${ang}deg)`;
+  stage.appendChild(el);
+  setTimeout(()=>{el.style.left=tx+'%';el.style.top=ty+'%';el.style.transition='left 2.5s linear,top 2.5s linear';},50);
+  setTimeout(()=>el.remove(),3000);
+}
+function dc(stage,lx,ty){
+  const el=document.createElement('div');el.className='sdc';
+  el.style.cssText=`left:${lx}%;top:${ty}%`;
+  stage.appendChild(el);setTimeout(()=>el.remove(),1200);
+}
+function sam(stage,lx,tp){
+  const el=document.createElement('div');el.className='ssam';
+  el.style.cssText=`left:${lx}%;bottom:${100-tp}%;width:3px;height:4px`;
+  stage.appendChild(el);setTimeout(()=>el.remove(),2200);
+}
+function laser(stage,fx,fy,tx,ty){
+  const el=document.createElement('div');el.className='slaser';
+  const ang=Math.atan2(ty-fy,tx-fx)*180/Math.PI;
+  const len=Math.sqrt((tx-fx)**2+(ty-fy)**2);
+  el.style.cssText=`left:${fx}%;top:${fy}%;width:${len*1.2}%;transform:rotate(${ang}deg)`;
+  stage.appendChild(el);setTimeout(()=>el.remove(),400);
+}
+function exp(stage,lx,ty){
+  const el=document.createElement('div');el.className='sexp';
+  el.style.cssText=`left:${lx}%;top:${ty}%`;
+  const frags=[[-10,-18],[10,-16],[-6,-22],[14,-12],[-14,-8]];
+  el.innerHTML='<div class="ec"></div><div class="er"></div><div class="esm"></div>';
+  stage.appendChild(el);setTimeout(()=>el.remove(),2500);
+}
+function int(stage,lx,ty){
+  const el=document.createElement('div');el.className='sint';
+  el.style.cssText=`left:${lx}%;top:${ty}%`;
+  stage.appendChild(el);setTimeout(()=>el.remove(),600);
+}
+function addLog(e){
+  const log=document.getElementById('sim-log');
+  const pre=e.c==='lg'?'✓':e.c==='lb'?'✗':e.c==='lw'?'⚠':'›';
+  const div=document.createElement('div');div.className=e.c;div.textContent=pre+' '+e.x;
+  log.appendChild(div);
+  while(log.children.length>3)log.removeChild(log.firstChild);
+}
+function result(stage,ok,title,body,stats){
+  clearInterval(clockInt);
+  document.getElementById('r-icon').textContent=ok?'✅':'❌';
+  document.getElementById('r-title').textContent=title;
+  document.getElementById('r-title').style.color=ok?'var(--gn)':'var(--rd)';
+  document.getElementById('r-body').textContent=body;
+  document.getElementById('r-stats').innerHTML=stats.map(s=>`<div class="rsbox"><div class="rsv" style="color:${ok?'var(--gn)':'var(--rd)'}">${s.v}</div><div class="rsl">${s.l}</div></div>`).join('');
+  document.getElementById('sh-out').textContent=ok?'STATUS: SUCCESS':'STATUS: FAILED';
+  setTimeout(()=>document.getElementById('simres').classList.add('on'),800);
+}
+function closeSim(){
+  G.simId=null;G.timers.forEach(clearTimeout);G.timers=[];clearInterval(clockInt);
+  const o=document.getElementById('simov');
+  o.style.opacity='0';
+  document.getElementById('simbar-t').classList.remove('open');
+  document.getElementById('simbar-b').classList.remove('open');
+  setTimeout(()=>{o.style.display='none';o.style.opacity='';},400);
+}
+function showDebrief(){
+  closeSim();buildDebrief();nav('replay');
+}
+
+/* ═════════════════════════════════════
+   REPLAY / SPECTATOR
+═════════════════════════════════════ */
+function initReplay(){buildDebrief();loadReplay(G.replayId);}
+
+function loadReplay(id){
+  G.replayId=id;G.replayClock=0;
+  clearInterval(G.replayTimer);
+  document.getElementById('replay-clock').textContent='T+00:00';
+  document.getElementById('scrub-fill').style.width='0%';
+  document.getElementById('scrub-thumb').style.left='0%';
+  buildDebrief();
+}
+
+function toggleReplay(){
+  G.replayPlaying=!G.replayPlaying;
+  const btn=document.getElementById('rplay-btn');
+  if(G.replayPlaying){
+    btn.textContent='⏸ PAUSE';btn.classList.add('on');
+    const data=SIMS[G.replayId];
+    if(!data)return;
+    const total=data.steps[data.steps.length-1].t/1000;
+    G.replayTimer=setInterval(()=>{
+      G.replayClock++;
+      const pct=Math.min(G.replayClock/total*100,100);
+      document.getElementById('scrub-fill').style.width=pct+'%';
+      document.getElementById('scrub-thumb').style.left=pct+'%';
+      const m=String(Math.floor(G.replayClock/60)).padStart(2,'0');
+      const s=String(G.replayClock%60).padStart(2,'0');
+      document.getElementById('replay-clock').textContent='T+'+m+':'+s;
+      // Highlight current event
+      const events=document.querySelectorAll('.rl-event');
+      events.forEach(ev=>{
+        const t=parseInt(ev.dataset.t||0)/1000;
+        ev.style.background=Math.abs(t-G.replayClock)<2?'rgba(0,200,255,.06)':'';
+      });
+      if(G.replayClock>=total){G.replayPlaying=false;clearInterval(G.replayTimer);btn.textContent='▶ PLAY';btn.classList.remove('on');}
+    },1000);
+  } else {
+    btn.textContent='▶ PLAY';btn.classList.remove('on');
+    clearInterval(G.replayTimer);
+  }
+}
+
+function stepReplay(dir){
+  const data=SIMS[G.replayId];
+  if(!data)return;
+  const idx=data.steps.findIndex(s=>s.t/1000>G.replayClock);
+  const newIdx=Math.max(0,Math.min(data.steps.length-1,(idx<0?data.steps.length-1:idx)+dir));
+  G.replayClock=Math.floor(data.steps[newIdx].t/1000);
+  const total=data.steps[data.steps.length-1].t/1000;
+  const pct=G.replayClock/total*100;
+  document.getElementById('scrub-fill').style.width=pct+'%';
+  document.getElementById('scrub-thumb').style.left=pct+'%';
+  const m=String(Math.floor(G.replayClock/60)).padStart(2,'0');
+  const s=String(G.replayClock%60).padStart(2,'0');
+  document.getElementById('replay-clock').textContent='T+'+m+':'+s;
+}
+
+function scrubClick(e){
+  const scrub=document.getElementById('scrub');
+  const pct=e.offsetX/scrub.offsetWidth;
+  const data=SIMS[G.replayId];
+  if(!data)return;
+  const total=data.steps[data.steps.length-1].t/1000;
+  G.replayClock=Math.floor(pct*total);
+  document.getElementById('scrub-fill').style.width=(pct*100)+'%';
+  document.getElementById('scrub-thumb').style.left=(pct*100)+'%';
+}
+
+function buildDebrief(){
+  const data=SIMS[G.replayId];
+  if(!data)return;
+  const el=document.getElementById('replay-events');
+  if(!el)return;
+  el.innerHTML=data.steps.map(step=>{
+    const cls=step.l.c==='lg'?'rl-good':step.l.c==='lb'?'rl-bad':step.l.c==='lw'?'rl-warn':'rl-info';
+    const t=step.t/1000;
+    const m=String(Math.floor(t/60)).padStart(2,'0');
+    const s=String(t%60).padStart(2,'0');
+    return`<div class="rl-event" data-t="${step.t}">
+      <div class="rl-time">T+${m}:${s}</div>
+      <div class="rl-dot ${cls}"></div>
+      <div class="rl-text">${step.l.x}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ═════════════════════════════════════
+   TOAST
+═════════════════════════════════════ */
+let toastT;
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.style.display='block';
+  clearTimeout(toastT);toastT=setTimeout(()=>t.style.display='none',3200);
+}
+
+/* ═════════════════════════════════════
+   INIT
+═════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded',()=>{
+  buildDebrief();
+  setTimeout(()=>toast('🎙 Tap MIC in War Room to join audio'),1800);
+});
+
+/* ═══════════ OPPONENT ROOM ═══════════ */
+const OPP_MEMBERS = [
+  {loc:'ANKARA',role:'PRESIDENT',on:true},
+  {loc:'ISTANBUL',role:'DEF. MINISTER',on:true},
+  {loc:'ANKARA',role:'GEN. STAFF',on:true},
+  {loc:'KARACHI',role:'PAK COAS',on:true},
+  {loc:'IZMIR',role:'NAVAL CDR',on:false},
+  {loc:'ANKARA',role:'MIT CHIEF',on:true},
+];
+const OPP_INTERCEPTS = [
+  {icon:'📡',title:'TUR NSC · 06:14Z',body:'[DECRYPTED] President: "Maintain Arabian Sea position. India will not act — they fear our NATO connection. Drone transfer on schedule."',conf:'HIGH',type:'n'},
+  {icon:'📡',title:'TUR-PAK · 05:30Z',body:'[PARTIAL] ISI DG: "Azerbaijan route confirmed. Kamra AWC ready to receive. Drone operators trained and operational..."',conf:'MED',type:'n'},
+  {icon:'🕵',title:'HUMINT — RAW BAKU · 04:00Z',body:'Pakistani COAS arrived Ankara. Meeting TUR Defence Minister — expanded military cooperation framework. Press blackout ordered.',conf:'CONFIRMED',type:'c'},
+  {icon:'💻',title:'NTRO CYBER · 03:15Z',body:'[SIGINT] Encrypted 4.7GB transfer Ankara MoD → Islamabad GHQ. Assessment: drone system technical documentation.',conf:'AUTOMATED',type:'n'},
+  {icon:'🔍',title:'AGENT REPORT · 02:45Z',body:'MIT aware of Indian ISR drone. Ankara assesses Indian resolve as LOW — believes India will not act militarily.',conf:'HIGH',type:'c'},
+];
+
+function buildOppRoom() {
+  const tiles = document.getElementById('opp-tiles');
+  if(tiles) tiles.innerHTML = OPP_MEMBERS.map(m => `
+    <div style="background:var(--p2);border:1px solid rgba(255,59,59,.14);border-radius:3px;padding:8px;text-align:center;${!m.on?'opacity:.4':''}">
+      <div style="font-size:20px;margin-bottom:3px">👤</div>
+      <div class="mono f9 dm">${m.loc}</div>
+      <div class="f10 rd">${m.role}</div>
+      <div style="width:6px;height:6px;border-radius:50%;background:${m.on?'var(--gn)':'var(--dm)'};margin:5px auto 0;box-shadow:${m.on?'0 0 5px var(--gn)':'none'}"></div>
+    </div>`).join('');
+
+  const feed = document.getElementById('opp-feed');
+  if(feed) {
+    feed.innerHTML = '';
+    OPP_INTERCEPTS.forEach((item, i) => {
+      setTimeout(() => {
+        const div = document.createElement('div');
+        div.style.cssText = `background:var(--p2);border:1px solid rgba(${item.type==='c'?'168,85,247':'255,59,59'},.14);border-left:3px solid ${item.type==='c'?'var(--pu)':'var(--rd)'};border-radius:3px;padding:10px 12px;margin-bottom:7px`;
+        div.innerHTML = `<div class="flex aic g8 mb6"><div style="font-size:12px">${item.icon}</div><div class="mono f9 ${item.type==='c'?'go':'rd'}" style="flex:1">${item.title}</div><div class="mono f9 dm">CONF: ${item.conf}</div></div><div class="f11 lh" style="color:var(--tx)">${item.body}</div>`;
+        feed.appendChild(div);
+      }, i * 180);
+    });
+  }
+}
+
+function addOppIntercept() {
+  const extras = [
+    {icon:'📡',title:'TUR NAVAL · NOW',body:'TCG Anadolu speed 22kt. TB3 drones on deck — preparing sortie toward Indian EEZ. Ankara authorized demonstration exercise.',conf:'HIGH',type:'n'},
+    {icon:'🕵',title:'PAK-TUR ENCRYPTED · NOW',body:'Transfer window: 36hr. Pakistani pilot training complete. First TB3 sorties possible 72hr post-delivery.',conf:'CONFIRMED',type:'c'},
+    {icon:'💻',title:'MIT CYBER OPS · NOW',body:'Turkish unit probing ISRO satellite ground stations. Air defense radar frequency scanning. Low-grade disruption — not yet effective.',conf:'MED',type:'n'},
+  ];
+  const item = extras[Math.floor(Math.random()*extras.length)];
+  const feed = document.getElementById('opp-feed');
+  if(!feed) return;
+  const div = document.createElement('div');
+  div.style.cssText = `background:var(--p2);border:1px solid rgba(${item.type==='c'?'168,85,247':'255,59,59'},.14);border-left:3px solid ${item.type==='c'?'var(--pu)':'var(--rd)'};border-radius:3px;padding:10px 12px;margin-bottom:7px;animation:si .3s ease`;
+  div.innerHTML = `<div class="flex aic g8 mb6"><div style="font-size:12px">${item.icon}</div><div class="mono f9 ${item.type==='c'?'go':'rd'}" style="flex:1">${item.title}</div><div class="mono f9 dm">CONF: ${item.conf}</div></div><div class="f11 lh" style="color:var(--tx)">${item.body}</div>`;
+  feed.insertBefore(div, feed.firstChild);
+  toast('🔓 New intercept decrypted');
+}
+
+/* ═══════════ SCORE / SITUATIONAL AWARENESS ═══════════ */
+function buildScore() {
+  const el = document.getElementById('score-body');
+  if(!el) return;
+  const sides = [
+    {flag:'🇮🇳',name:'INDIA',side:'friendly',
+     stats:[{l:'Military Readiness',v:74,c:'var(--gn)'},{l:'Diplomatic Position',v:68,c:'var(--ac)'},{l:'Economic Health',v:82,c:'var(--ac)'},{l:'Intel Advantage',v:71,c:'var(--go)'},{l:'Alliance Support',v:65,c:'var(--go)'}],
+     score:72},
+    {flag:'🇹🇷',name:'TÜRKIYE',side:'enemy',
+     stats:[{l:'Military Readiness',v:61,c:'var(--rd)'},{l:'Diplomatic Position',v:54,c:'var(--rd)'},{l:'Economic Health',v:42,c:'var(--rd)'},{l:'Intel Advantage',v:48,c:'var(--go)'},{l:'Alliance Support',v:58,c:'var(--go)'}],
+     score:53},
+  ];
+
+  el.innerHTML = `
+    <div class="shdr">STRATEGIC BALANCE — LIVE</div>
+    <div class="card mb12" style="text-align:center;background:linear-gradient(135deg,rgba(0,200,255,.05),rgba(0,200,255,.02))">
+      <div style="font-family:'Orbitron',monospace;font-size:11px;color:var(--dm);letter-spacing:2px;margin-bottom:10px">OVERALL ADVANTAGE</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="font-size:24px">🇮🇳</div>
+        <div style="flex:1;height:8px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden">
+          <div style="height:100%;width:72%;background:linear-gradient(90deg,var(--gn),var(--ac));border-radius:4px;transition:width 1s ease"></div>
+        </div>
+        <div style="font-size:24px">🇹🇷</div>
+      </div>
+      <div class="flex" style="justify-content:space-between;margin-top:6px">
+        <div class="mono f9 gn">INDIA 72%</div>
+        <div class="mono f9 rd">TURKEY 53%</div>
+      </div>
+    </div>
+    ${sides.map(s => `
+    <div class="card mb12" style="border-left:3px solid ${s.side==='friendly'?'var(--ac)':'var(--rd)'}">
+      <div class="flex aic jsb mb10">
+        <div style="font-size:28px">${s.flag}</div>
+        <div style="font-family:'Orbitron',monospace;font-size:14px;color:${s.side==='friendly'?'var(--ac)':'var(--rd)'};font-weight:700">${s.name}</div>
+        <div style="font-family:'Orbitron',monospace;font-size:22px;color:${s.side==='friendly'?'var(--gn)':'var(--rd)'};font-weight:900">${s.score}</div>
+      </div>
+      ${s.stats.map(stat => `
+      <div class="flex aic g8 mb6" style="gap:8px">
+        <div class="f11" style="width:130px;flex-shrink:0;color:var(--dm)">${stat.l}</div>
+        <div style="flex:1;height:5px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden">
+          <div style="height:100%;width:${stat.v}%;background:${stat.c};border-radius:3px;transition:width .8s ease"></div>
+        </div>
+        <div style="font-family:'Orbitron',monospace;font-size:10px;color:${stat.c};width:28px;text-align:right">${stat.v}</div>
+      </div>`).join('')}
+    </div>`).join('')}
+    <div class="shdr">ACTIVE THREAT VECTORS</div>
+    ${[
+      {threat:'TB3 Drone Transfer — Azerbaijan Corridor',prob:85,color:'var(--rd)',time:'36hr'},
+      {threat:'TCG Anadolu — Arabian Sea Presence',prob:70,color:'var(--rd)',time:'NOW'},
+      {threat:'PAK-TUR Military Coordination',prob:80,color:'var(--go)',time:'ONGOING'},
+      {threat:'Cyber — ISRO / Power Grid',prob:65,color:'var(--pu)',time:'ONGOING'},
+      {threat:'UNSC Diplomatic Pressure',prob:45,color:'var(--ac)',time:'72hr'},
+    ].map(t => `
+    <div class="card mb8" style="border-left:3px solid ${t.color}">
+      <div class="flex aic jsb mb5">
+        <div class="f12 bold" style="color:var(--wh);flex:1">${t.threat}</div>
+        <div class="tag" style="border-color:${t.color};color:${t.color};flex-shrink:0">${t.time}</div>
+      </div>
+      <div class="flex aic g8">
+        <div style="flex:1;height:5px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden">
+          <div style="height:100%;width:${t.prob}%;background:${t.color};border-radius:3px;transition:width .8s ease"></div>
+        </div>
+        <div class="mono f9" style="color:${t.color};width:28px">${t.prob}%</div>
+      </div>
+    </div>`).join('')}
+    <button class="btn btn-f btn-go mt8" onclick="nav('wr')">← WAR ROOM</button>
+  `;
+}
+
+/* ═══════════ AI ADVISOR ═══════════ */
+const ADVISOR_CHIPS = [
+  ['NSC Brief','GeoStrat India: Simulate a full NSC meeting on the Turkey-Pakistan crisis. Each minister gives distinct realistic advice. Then ask me for my decision.'],
+  ['War Game','GeoStrat: Full India vs Turkey naval war game in the Arabian Sea. Who wins? Walk me through the engagement hour by hour.'],
+  ['Intel Brief','GeoStrat: Complete intelligence assessment — what does India know about Turkey\'s capabilities and intentions? What are our blind spots?'],
+  ['Escalation','GeoStrat: If India deploys the carrier and Turkey does not back down — what is the escalation ladder? At what point does this go to war? Nuclear risk?'],
+  ['Sanctions','GeoStrat India: Design the full economic warfare package against Turkey. What leverage does India have? What hurts Turkey most?'],
+  ['Ally Brief','GeoStrat: Which allies should India approach and what can India realistically ask for? France, Russia, USA — what will each do?'],
+];
+
+let advisorHistory = [];
+
+function buildAdvisor() {
+  const el = document.getElementById('advisor-chat');
+  if(!el) return;
+  if(advisorHistory.length === 0) {
+    el.innerHTML = `
+      <div class="card mb12" style="background:linear-gradient(135deg,rgba(168,85,247,.06),rgba(168,85,247,.02));border-color:rgba(168,85,247,.2)">
+        <div style="font-family:'Orbitron',monospace;font-size:12px;color:var(--pu);font-weight:700;margin-bottom:6px">🧠 STRATEGIC AI ADVISOR</div>
+        <div class="f11 dm lh">I have access to the full intelligence picture, military order of battle, diplomatic landscape, and historical precedents. Ask me anything about the current India-Türkiye crisis — I will advise as your NSC strategic analyst.</div>
+      </div>`;
+  }
+  const chips = document.getElementById('advisor-chips');
+  if(chips) chips.innerHTML = ADVISOR_CHIPS.map(([l,p]) =>
+    `<button style="padding:4px 10px;border:1px solid var(--bd2);color:var(--dm);background:transparent;font-family:'Share Tech Mono',monospace;font-size:8px;cursor:pointer;border-radius:2px;transition:all .2s" onmouseover="this.style.borderColor='var(--ac)';this.style.color='var(--ac)'" onmouseout="this.style.borderColor='';this.style.color=''" onclick="quickAdvise(${JSON.stringify(p)})">${l} ↗</button>`
+  ).join('');
+}
+
+function quickAdvise(prompt) { sendAdvisorMsg(prompt); }
+
+function sendAdvisor() {
+  const input = document.getElementById('advisor-input');
+  const msg = input.value.trim();
+  if(!msg) return;
+  input.value = '';
+  sendAdvisorMsg(msg);
+}
+
+async function sendAdvisorMsg(userMsg) {
+  const chat = document.getElementById('advisor-chat');
+  if(!chat) return;
+
+  // User bubble
+  const userDiv = document.createElement('div');
+  userDiv.style.cssText = 'background:rgba(255,215,0,.06);border:1px solid rgba(255,215,0,.15);border-left:3px solid var(--go);border-radius:4px;padding:10px 12px;margin-bottom:8px';
+  userDiv.innerHTML = `<div class="mono f9 go mb4">PRIME MINISTER</div><div class="f12 lh" style="color:var(--tx)">${userMsg}</div>`;
+  chat.appendChild(userDiv);
+
+  // Advisor loading bubble
+  const id = 'adv-' + Date.now();
+  const advDiv = document.createElement('div');
+  advDiv.id = id;
+  advDiv.style.cssText = 'background:rgba(168,85,247,.06);border:1px solid rgba(168,85,247,.15);border-left:3px solid var(--pu);border-radius:4px;padding:10px 12px;margin-bottom:8px';
+  advDiv.innerHTML = `<div class="mono f9" style="color:var(--pu);margin-bottom:4px">🧠 AI STRATEGIC ADVISOR</div><div class="f12 lh" style="color:var(--dm)">Analyzing<span style="animation:none">...</span></div>`;
+  chat.appendChild(advDiv);
+  chat.scrollTop = chat.scrollHeight;
+
+  advisorHistory.push({role:'user', content: userMsg});
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: `You are a strategic AI advisor in GeoStrat — a multiplayer geopolitical war simulation game. You advise the Indian Prime Minister. The scenario: Turkey is supplying drones to Pakistan and has naval assets in the Arabian Sea (TCG Anadolu). Your role: give detailed, realistic, educational strategic advice drawing on real military doctrine, geopolitics, and historical precedents. Be specific about assets, timelines, risks, and outcomes. End each response with 2-3 follow-up action options for the player.`,
+        messages: advisorHistory
+      })
+    });
+    const data = await resp.json();
+    const reply = data.content?.[0]?.text || 'Analysis unavailable — check connection.';
+    advisorHistory.push({role:'assistant', content: reply});
+    const textEl = advDiv.querySelector('div:last-child');
+    if(textEl) textEl.innerHTML = reply.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong style="color:var(--wh)">$1</strong>');
+    chat.scrollTop = chat.scrollHeight;
+  } catch(e) {
+    const textEl = advDiv.querySelector('div:last-child');
+    if(textEl) textEl.innerHTML = `<span style="color:var(--rd)">⚠ Advisor offline. In production this connects to Claude AI for full strategic analysis.<br><br>Demo: Deploy the naval battle group to establish sea control, while activating diplomatic track with France and Russia at UNSC. Authorize RAW covert interdiction of the drone transfer — 36-hour window.</span>`;
+  }
+}
+
+/* ═══════════ TRADE WAR ═══════════ */
+function buildTrade() {
+  const el = document.getElementById('trade-body');
+  if(!el) return;
+  el.innerHTML = `
+    <div class="shdr">ECONOMIC WARFARE — INDIA vs TÜRKIYE</div>
+    <div class="card mb12" style="border-left:3px solid var(--go)">
+      <div style="font-family:'Orbitron',monospace;font-size:12px;color:var(--go);margin-bottom:8px">💰 BILATERAL TRADE — $1.4B</div>
+      <div class="f11 dm lh">India-Turkey trade: machinery (TUR exports), chemicals, marble, textiles. India exports: pharmaceuticals, cotton, electronics. Cutting this trade hurts Turkey more than India — but leverage is limited compared to EU sanctions.</div>
+    </div>
+    <div class="shdr">INDIA'S ECONOMIC WEAPONS</div>
+    ${[
+      {name:'Trade Sanctions',ico:'🚫',desc:'Halt $1.4B bilateral trade. Target Turkish marble, chemicals, machinery imports.',impact:'MODERATE',risk:'LOW',time:'IMMEDIATE',color:'var(--gn)'},
+      {name:'SWIFT Coordination',ico:'🏦',desc:'Coordinate with EU to pressure Turkish banking access. Requires European buy-in.',impact:'HIGH',risk:'MED',time:'60 DAYS',color:'var(--go)'},
+      {name:'Tourism Advisory',ico:'✈',desc:'Issue security advisory against India travel to Turkey. India sends 200K+ tourists/yr.',impact:'LOW',risk:'LOW',time:'IMMEDIATE',color:'var(--gn)'},
+      {name:'Defence Blacklist',ico:'🛡',desc:'Bar Turkish companies from Indian defence contracts. Signal to other nations.',impact:'MED',risk:'LOW',time:'30 DAYS',color:'var(--gn)'},
+      {name:'WTO Complaint',ico:'⚖',desc:'File WTO dispute on discriminatory trade practices. Long-term legal pressure.',impact:'LOW',risk:'LOW',time:'6-12 MONTHS',color:'var(--ac)'},
+      {name:'Oil Routing',ico:'🛢',desc:'Coordinate with Gulf partners to restrict Turkish access to discounted oil.',impact:'HIGH',risk:'HIGH',time:'90 DAYS',color:'var(--rd)'},
+    ].map(t => `
+    <div class="card mb8" style="cursor:pointer;border-left:3px solid ${t.color};transition:all .2s" onclick="activateSanction('${t.name}')">
+      <div class="flex aic jsb mb6">
+        <div style="font-size:16px">${t.ico}</div>
+        <div class="f12 bold" style="color:var(--wh);flex:1;padding:0 8px">${t.name}</div>
+        <div class="tag" style="border-color:${t.impact==='HIGH'?'var(--gn)':t.impact==='MODERATE'?'var(--go)':'var(--ac)'};color:${t.impact==='HIGH'?'var(--gn)':t.impact==='MODERATE'?'var(--go)':'var(--ac)'}">${t.impact}</div>
+      </div>
+      <div class="f11 dm lh mb6">${t.desc}</div>
+      <div class="flex" style="gap:6px">
+        <span class="tag td">${t.time}</span>
+        <span class="tag ${t.risk==='LOW'?'tg':t.risk==='MED'?'ty':'tr'}">${t.risk} RISK</span>
+      </div>
+    </div>`).join('')}
+    <div class="shdr mt12">TURKEY'S COUNTER-LEVERAGE</div>
+    <div class="card mb12">
+      <div class="f11 dm lh">
+        <strong style="color:var(--wh)">Bosphorus access:</strong> Turkey controls the strait — could restrict Indian naval vessels (limited by Montreux Convention).<br><br>
+        <strong style="color:var(--wh)">OIC bloc:</strong> Turkey could mobilize Islamic bloc at UN against India on Kashmir — but this is already happening.<br><br>
+        <strong style="color:var(--wh)">Pakistan arms:</strong> Already occurring — sanctioning Turkey accelerates rather than prevents this.<br><br>
+        <strong style="color:var(--wh)">NATO lobbying:</strong> Turkey could push NATO to pressure India\'s Russian arms deals.
+      </div>
+    </div>
+    <button class="btn btn-f btn-go mb8" onclick="sendAdvisorMsg('GeoStrat: Design the complete India economic warfare package against Turkey. What combination of trade, financial, and diplomatic tools would have the most impact? Give me a phased 90-day plan with specific actions each week.');nav('advisor')">🧠 AI: Full Economic War Plan ↗</button>
+    <button class="btn btn-f" onclick="nav('wr')">← RETURN TO WAR ROOM</button>
+  `;
+}
+
+function activateSanction(name) {
+  toast('⚡ Sanction authorized: ' + name + ' — executing');
+  setTimeout(() => toast('✓ ' + name + ' active — monitoring Turkey response'), 1500);
+}
+
+/* ═══════════ EXTENDED NAV ═══════════ */
+function nav(id) {
+  document.querySelectorAll('.scr').forEach(s => s.classList.remove('on'));
+  const s = document.getElementById(id);
+  if(s) s.classList.add('on');
+  if(id === 'wr') initWR();
+  if(id === 'tmap') initTMap();
+  if(id === 'replay') initReplay();
+  if(id === 'opp') buildOppRoom();
+  if(id === 'score') buildScore();
+  if(id === 'advisor') buildAdvisor();
+  if(id === 'trade') buildTrade();
+}
+
+/* ═══════════ ADD QUICK ACCESS BUTTONS TO WAR ROOM ═══════════ */
+function addWRQuickAccess() {
+  const simList = document.getElementById('sim-quick-list');
+  if(simList && !document.getElementById('wr-extra-btns')) {
+    const extra = document.createElement('div');
+    extra.id = 'wr-extra-btns';
+    extra.innerHTML = `
+      <div class="divider"></div>
+      <div class="shdr">QUICK SCREENS</div>
+      <div class="g2">
+        <button class="btn btn-pu" onclick="nav('advisor')">🧠 AI Advisor</button>
+        <button class="btn btn-rd" onclick="nav('opp')">🎯 Enemy Room</button>
+        <button class="btn btn-go" onclick="nav('trade')">💰 Trade War</button>
+        <button class="btn" onclick="nav('score')">📊 Situation</button>
+      </div>`;
+    simList.appendChild(extra);
+  }
+}
+
+/* ═══════════ WAR ROOM INIT ═══════════ */
+function initWR() {
+  buildMissions();
+  buildOrders();
+  buildSimQuickList();
+  buildVoteHistory();
+  buildMiniMap();
+  startSpeak();
+  startNSATimer();
+  setTimeout(()=>toast('🎙 Tap MIC to join audio channel'),1500);
+  setTimeout(addWRQuickAccess, 80);
+}
+
+</script>
+
+<!-- ══════════════ OPPONENT ROOM ══════════════ -->
+<div class="scr" id="opp">
+  <div class="hud">
+    <div class="hud-bk" onclick="nav('wr')">← WAR ROOM</div>
+    <div class="hud-t">🎯 OPPONENT ROOM</div>
+    <div class="hud-sp"></div>
+    <div class="bx bx-alert">INTERCEPTED</div>
+  </div>
+  <div class="body pb80">
+    <div style="background:linear-gradient(135deg,rgba(255,59,59,.07),rgba(255,59,59,.02));border:1px solid rgba(255,59,59,.22);border-radius:4px;padding:12px;margin-bottom:12px">
+      <div style="font-family:'Orbitron',monospace;font-size:13px;color:var(--rd);font-weight:700;margin-bottom:4px">🇹🇷 TÜRKIYE NSC — INTERCEPTED FEED</div>
+      <div class="mono f9 dm">RAW/NTRO SIGINT · TOP SECRET · NSC DISTRIBUTION</div>
+    </div>
+    <div class="shdr">INTERCEPTED VIDEO COUNCIL</div>
+    <div class="g3 mb12" id="opp-tiles"></div>
+    <div class="shdr">DECRYPTED COMMUNICATIONS</div>
+    <div id="opp-feed"></div>
+    <div class="mt12">
+      <button class="btn btn-f btn-rd mb8" onclick="addOppIntercept()">↻ DECRYPT NEW INTERCEPT</button>
+      <button class="btn btn-f btn-go mb8" onclick="runSim('airstrike')">▶ SIMULATE: TURKEY RETALIATES</button>
+      <button class="btn btn-f btn-pu" onclick="nav('wr')">← RETURN TO WAR ROOM</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SCORE / SITUATIONAL AWARENESS ══════════════ -->
+<div class="scr" id="score">
+  <div class="hud">
+    <div class="hud-bk" onclick="nav('wr')">← BACK</div>
+    <div class="hud-t">📊 SITUATIONAL AWARENESS</div>
+  </div>
+  <div class="body pb80" id="score-body"></div>
+</div>
+
+<!-- ══════════════ AI ADVISOR ══════════════ -->
+<div class="scr" id="advisor">
+  <div class="hud">
+    <div class="hud-bk" onclick="nav('wr')">← WAR ROOM</div>
+    <div class="hud-t">🧠 AI ADVISOR</div>
+    <div class="hud-sp"></div>
+    <div class="bx bx-live">LIVE</div>
+  </div>
+  <div style="flex:1;display:flex;flex-direction:column;overflow:hidden">
+    <div class="body" id="advisor-chat" style="flex:1;overflow-y:auto"></div>
+    <div style="padding:10px 12px;background:var(--panel);border-top:1px solid var(--bd);flex-shrink:0">
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px" id="advisor-chips"></div>
+      <div style="display:flex;gap:8px">
+        <input id="advisor-input" placeholder="Ask your strategic advisor..." style="flex:1;background:var(--p3);border:1px solid var(--bd);color:var(--wh);font-family:'Exo 2',sans-serif;font-size:13px;padding:8px 12px;border-radius:3px;outline:none" onkeydown="if(event.key==='Enter')sendAdvisor()">
+        <button class="btn" onclick="sendAdvisor()">ASK</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ TRADE WAR ══════════════ -->
+<div class="scr" id="trade">
+  <div class="hud">
+    <div class="hud-bk" onclick="nav('wr')">← BACK</div>
+    <div class="hud-t">💰 ECONOMIC WARFARE</div>
+  </div>
+  <div class="body pb80" id="trade-body"></div>
+</div>
+
+<script>
+// GeoStrat PWA Service Worker Registration
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(reg => console.log('[GeoStrat] SW active:', reg.scope))
+      .catch(err => console.log('[GeoStrat] SW error:', err));
+  });
+}
+// PWA install prompt
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  // Show install toast after 10 seconds
+  setTimeout(() => {
+    if (deferredPrompt) toast('📱 Install GeoStrat as app — tap ⋮ → Add to Home Screen');
+  }, 10000);
+});
+window.addEventListener('appinstalled', () => {
+  toast('✅ GeoStrat installed! Launch from your home screen.');
+  deferredPrompt = null;
+});
+</script>
+</body>
+</html>
