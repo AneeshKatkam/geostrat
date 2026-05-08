@@ -1,0 +1,37 @@
+{
+  "name": "GeoStrat — Command & Sovereignty",
+  "short_name": "GeoStrat",
+  "description": "Multiplayer geopolitical war strategy. Command a nation. Lead your cabinet. Real military doctrine.",
+  "start_url": "/game.html",
+  "display": "fullscreen",
+  "orientation": "portrait-primary",
+  "theme_color": "#00c8ff",
+  "background_color": "#030810",
+  "categories": ["games", "strategy", "education"],
+  "lang": "en",
+  "icons": [
+    { "src": "/icons/icon-72.png",   "sizes": "72x72",   "type": "image/png", "purpose": "any maskable" },
+    { "src": "/icons/icon-96.png",   "sizes": "96x96",   "type": "image/png", "purpose": "any maskable" },
+    { "src": "/icons/icon-128.png",  "sizes": "128x128", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/icons/icon-144.png",  "sizes": "144x144", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/icons/icon-152.png",  "sizes": "152x152", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/icons/icon-192.png",  "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/icons/icon-384.png",  "sizes": "384x384", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/icons/icon-512.png",  "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "screenshots": [
+    { "src": "/screenshots/war-room.png",  "sizes": "390x844", "type": "image/png", "label": "War Room — Live Council" },
+    { "src": "/screenshots/combat-sim.png","sizes": "390x844", "type": "image/png", "label": "Combat Simulation" },
+    { "src": "/screenshots/tact-map.png",  "sizes": "390x844", "type": "image/png", "label": "Tactical Map" }
+  ],
+  "shortcuts": [
+    { "name": "Enter War Room",   "url": "/game.html#wr",       "description": "Go to situation room" },
+    { "name": "Quick Scenario",   "url": "/game.html?mode=scenario", "description": "Launch a battle scenario" },
+    { "name": "Tactical Map",     "url": "/game.html#tmap",     "description": "Open tactical map" }
+  ],
+  "related_applications": [
+    { "platform": "play",    "url": "https://play.google.com/store/apps/details?id=com.geostrat.game", "id": "com.geostrat.game" },
+    { "platform": "itunes",  "url": "https://apps.apple.com/app/geostrat/id0000000000" }
+  ],
+  "prefer_related_applications": false
+}

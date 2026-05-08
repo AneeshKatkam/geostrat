@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#030810" rx="80"/>
+  <circle cx="256" cy="256" r="200" fill="none" stroke="rgba(0,200,255,0.15)" stroke-width="1"/>
+  <circle cx="256" cy="256" r="150" fill="none" stroke="rgba(0,200,255,0.1)" stroke-width="1"/>
+  <circle cx="256" cy="256" r="100" fill="none" stroke="rgba(0,200,255,0.08)" stroke-width="1"/>
+  <!-- Sweep arm -->
+  <line x1="256" y1="256" x2="400" y2="140" stroke="rgba(0,200,255,0.5)" stroke-width="2"/>
+  <!-- Center dot -->
+  <circle cx="256" cy="256" r="8" fill="#00c8ff"/>
+  <!-- Blips -->
+  <circle cx="340" cy="180" r="5" fill="#00c8ff" opacity="0.9"/>
+  <circle cx="180" cy="320" r="4" fill="#ff3b3b" opacity="0.8"/>
+  <circle cx="310" cy="340" r="3" fill="#00c8ff" opacity="0.6"/>
+  <!-- GeoStrat text -->
+  <text x="256" y="430" font-family="monospace" font-size="48" font-weight="bold" fill="#00c8ff" text-anchor="middle" letter-spacing="6">GEO</text>
+</svg>
